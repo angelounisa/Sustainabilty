@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Salerno Landslide Monitoring</title>
 <meta name="description" content="Dashboard: pioggia, contenuto d'acqua e suzione (siti V/NV) ed eventi franosi, Salerno 2025–2026">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.35.2/plotly.min.js"></script>
+<script src="plotly-2.35.2.min.js"></script>
 <style>
 :root{--bg:#f7f7f4;--card:#ffffff;--ink:#1d2321;--muted:#5d6763;--line:#dfe3e0;--accent:#2e6b4f;--ls:#c62828;--v:#2e7d32;--nv:#b8860b;--chip:#eef2ef}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121614;--card:#1b201e;--ink:#e6ebe8;--muted:#9aa5a0;--line:#2c3431;--accent:#6fbf98;--ls:#ef5350;--v:#66bb6a;--nv:#e0b04a;--chip:#232a27}}
@@ -271,7 +271,7 @@ function mvHeat(){
   const z=R.map(r=>W.map(w=>get(r,w)["AUC_"+sc+"_mean"])),t=R.map(r=>W.map(w=>{const x=get(r,w);return x["AUC_"+sc+"_mean"].toFixed(2)+(x.complete_all_gauges?"":"†")}));
   Plotly.react("mv-heat",[{z,x:W.map(w=>D.features[w][0]),y:R.map(r=>D.features[r][0]),type:"heatmap",colorscale:[[0,"#c62828"],[.5,"#fdd835"],[1,"#1b7f3b"]],zmin:.5,zmax:1,text:t,texttemplate:"%{text}",textfont:{size:10,color:"#111"},colorbar:{title:"AUC medio"},
     hovertemplate:"%{y} + %{x}<br>AUC medio 5 pluviometri = %{z:.3f}<extra></extra>"}],lay({margin:{l:100,r:10,t:10,b:110},height:430,shapes:[{type:"line",x0:5.5,x1:5.5,y0:-.5,y1:R.length-.5,line:{color:css("--ink"),width:2}}]}),cfg);
-  document.getElementById("mv-heat").on("plotly_click",e=>{const p=e.points[0];mvSel=R[p.pointIndex[0]]+" + "+W[p.pointIndex[1]];$("#mv-fam").value="2var_R+W";mv()});
+  const hm=document.getElementById("mv-heat");if(!hm._mvClick){hm._mvClick=1;hm.on("plotly_click",e=>{const p=e.points[0];mvSel=R[p.pointIndex[0]]+" + "+W[p.pointIndex[1]];$("#mv-fam").value="2var_R+W";mv()})}
 }
 function lab(c){return c.split(" + ").map(x=>D.features[x][0]).join(" + ")}
 function mv(){
