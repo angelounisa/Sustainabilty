@@ -1,0 +1,6 @@
+gauge,n_rain_spells_IETD,n_events,D_median_h,E_median_mm,E_max_mm,Imax_median_mmh,Imax_max_mmh,n_with_soil_data,n_landslide_events
+Albori,100,46,34.33,31.5,174.3,8.75,38.5,42,4
+Cetara,93,44,29.83,28.2,148.2,9.2,42.6,40,4
+Cetara S.C.,123,46,35.42,30.15,226.7,9.35,48.1,41,4
+Dragonea,113,46,33.17,30.7,246.1,9.85,46,42,3
+Salerno G.C.,96,44,31.42,24.2,190.6,8.5,38.2,39,3

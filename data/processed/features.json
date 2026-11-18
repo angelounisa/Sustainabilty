@@ -1,0 +1,174 @@
+{
+ "D_h": [
+  "D (h)",
+  false
+ ],
+ "E_mm": [
+  "E (mm)",
+  false
+ ],
+ "Imax_mmh": [
+  "I_max (mm/h)",
+  false
+ ],
+ "Imean_mmh": [
+  "I_mean (mm/h)",
+  false
+ ],
+ "P1h_mm": [
+  "P_1h (mm)",
+  false
+ ],
+ "P3h_mm": [
+  "P_3h (mm)",
+  false
+ ],
+ "P6h_mm": [
+  "P_6h (mm)",
+  false
+ ],
+ "P12h_mm": [
+  "P_12h (mm)",
+  false
+ ],
+ "P24h_mm": [
+  "P_24h (mm)",
+  false
+ ],
+ "A3d_mm": [
+  "A_3d (mm)",
+  false
+ ],
+ "A7d_mm": [
+  "A_7d (mm)",
+  false
+ ],
+ "A14d_mm": [
+  "A_14d (mm)",
+  false
+ ],
+ "A30d_mm": [
+  "A_30d (mm)",
+  false
+ ],
+ "V_VWC0_15": [
+  "V VWC0 15 cm",
+  false
+ ],
+ "V_dVWC_15": [
+  "V \u0394VWC 15 cm",
+  false
+ ],
+ "V_VWCpk_15": [
+  "V VWCpeak 15 cm",
+  false
+ ],
+ "V_s0_15": [
+  "V s0 15 cm",
+  true
+ ],
+ "V_ds_15": [
+  "V \u0394s 15 cm",
+  true
+ ],
+ "V_VWC0_35": [
+  "V VWC0 35 cm",
+  false
+ ],
+ "V_dVWC_35": [
+  "V \u0394VWC 35 cm",
+  false
+ ],
+ "V_VWCpk_35": [
+  "V VWCpeak 35 cm",
+  false
+ ],
+ "V_s0_35": [
+  "V s0 35 cm",
+  true
+ ],
+ "V_ds_35": [
+  "V \u0394s 35 cm",
+  true
+ ],
+ "V_VWC0_60": [
+  "V VWC0 60 cm",
+  false
+ ],
+ "V_dVWC_60": [
+  "V \u0394VWC 60 cm",
+  false
+ ],
+ "V_VWCpk_60": [
+  "V VWCpeak 60 cm",
+  false
+ ],
+ "V_s0_60": [
+  "V s0 60 cm",
+  true
+ ],
+ "V_ds_60": [
+  "V \u0394s 60 cm",
+  true
+ ],
+ "NV_VWC0_15": [
+  "NV VWC0 15 cm",
+  false
+ ],
+ "NV_dVWC_15": [
+  "NV \u0394VWC 15 cm",
+  false
+ ],
+ "NV_VWCpk_15": [
+  "NV VWCpeak 15 cm",
+  false
+ ],
+ "NV_s0_15": [
+  "NV s0 15 cm",
+  true
+ ],
+ "NV_ds_15": [
+  "NV \u0394s 15 cm",
+  true
+ ],
+ "NV_VWC0_30": [
+  "NV VWC0 30 cm",
+  false
+ ],
+ "NV_dVWC_30": [
+  "NV \u0394VWC 30 cm",
+  false
+ ],
+ "NV_VWCpk_30": [
+  "NV VWCpeak 30 cm",
+  false
+ ],
+ "NV_s0_30": [
+  "NV s0 30 cm",
+  true
+ ],
+ "NV_ds_30": [
+  "NV \u0394s 30 cm",
+  true
+ ],
+ "NV_VWC0_60": [
+  "NV VWC0 60 cm",
+  false
+ ],
+ "NV_dVWC_60": [
+  "NV \u0394VWC 60 cm",
+  false
+ ],
+ "NV_VWCpk_60": [
+  "NV VWCpeak 60 cm",
+  false
+ ],
+ "NV_s0_60": [
+  "NV s0 60 cm",
+  true
+ ],
+ "NV_ds_60": [
+  "NV \u0394s 60 cm",
+  true
+ ]
+}

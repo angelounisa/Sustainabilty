@@ -1,0 +1,5 @@
+id,datetime_local,uncertainty_h,location,time_note
+L1,2025-10-26 12:00,12,"SS163 Amalfitana km 47.7, Vietri sul Mare",hour not specified (whole day)
+L2,2025-11-25 15:00,3,"Via Fra' Generoso (road between Salerno and Vietri sul Mare)",afternoon
+L3,2026-02-06 05:40,0.5,"Fuenti (between Vietri sul Mare and Cetara), SS163 km 47.300",at dawn (approx. 05:40)
+L4,2026-02-12 14:08,0.5,"Vietri sul Mare, via Madonna dell'Arco (below SS163 km 48.3)",between 13:45 and 14:30

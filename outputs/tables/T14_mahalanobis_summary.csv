@@ -1,0 +1,6 @@
+gauge,n,n_ls,threshold,median_DM_ls,median_DM_nols,AUC,ls_above_thr,nols_above_thr,MWU_p_one_sided
+Albori,42,4,2.795,3.372,1.347,0.9079,2,3,0.002153
+Cetara,40,4,2.795,3.603,1.341,0.8889,2,3,0.003928
+Cetara S.C.,41,4,2.795,6.591,1.289,1,4,4,9.875e-06
+Dragonea,42,3,2.795,2.983,1.3,0.641,2,3,0.2269
+Salerno G.C.,39,3,2.795,3.442,1.322,0.9537,2,2,0.001751

@@ -1,0 +1,19 @@
+gauge,event_id,landslide,V_class_15,V_class_35,V_class_60,NV_class_15,NV_class_30,NV_class_60
+Albori,ALB-020,L1,relevant,relevant,extreme,relevant,relevant,relevant
+Albori,ALB-024,L2,relevant,relevant,irrelevant,relevant,relevant,relevant
+Albori,ALB-034,L3,,relevant,relevant,extreme,relevant,relevant
+Albori,ALB-035,L4,,relevant,irrelevant,relevant,relevant,relevant
+Cetara,CET-020,L1,relevant,relevant,extreme,relevant,relevant,relevant
+Cetara,CET-024,L2,relevant,relevant,irrelevant,relevant,relevant,relevant
+Cetara,CET-032,L3,,relevant,relevant,extreme,relevant,relevant
+Cetara,CET-033,L4,,relevant,irrelevant,relevant,relevant,relevant
+Cetara S.C.,CETS-021,L1,relevant,relevant,extreme,relevant,relevant,relevant
+Cetara S.C.,CETS-024,L2,extreme,relevant,relevant,extreme,extreme,extreme
+Cetara S.C.,CETS-035,L3,,relevant,relevant,extreme,relevant,relevant
+Cetara S.C.,CETS-036,L4,,relevant,irrelevant,extreme,relevant,relevant
+Dragonea,DRA-021,L1,relevant,relevant,extreme,relevant,relevant,relevant
+Dragonea,DRA-025,L2,relevant,relevant,irrelevant,relevant,relevant,relevant
+Dragonea,DRA-034,"L3,L4",,relevant,relevant,extreme,relevant,relevant
+Salerno G.C.,SAL-018,L1,relevant,relevant,extreme,relevant,relevant,relevant
+Salerno G.C.,SAL-022,L2,relevant,relevant,irrelevant,relevant,relevant,relevant
+Salerno G.C.,SAL-031,"L3,L4",,relevant,relevant,extreme,relevant,relevant
