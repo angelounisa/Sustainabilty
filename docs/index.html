@@ -128,6 +128,7 @@ p{margin:6px 0}
   <div class="card">
     <h3>Indicatore frana / no frana per pluviometro</h3>
     <p class="note">I = media dei percentili delle variabili rispetto agli eventi senza frana (verso critico: più pioggia, suolo più umido, suzione più bassa), scala 0–100. Allarme se I ≥ soglia di Youden. Valutazione <b>leave-one-event-out</b>: per ogni evento riferimento e soglia sono calcolati senza quell'evento. Le strategie "SEL" scelgono anche la combinazione dentro ogni fold. POD = frane rilevate; POFD = falsi allarmi / eventi senza frana; FAR = falsi allarmi / allarmi; TSS = POD − POFD. Le combinazioni fisse sono state scelte dopo l'analisi multivariata sugli stessi dati: le loro prestazioni sono ottimistiche; le "SEL" danno la stima onesta del costo di scegliere.</p>
+    <a href="figures/Fig18_indicator_construction.png" target="_blank"><img src="figures/Fig18_indicator_construction.png" alt="Costruzione dell'indicatore" style="width:100%;border-radius:6px;background:#fff;margin:6px 0 12px"></a>
     <div class="tw" id="ind-pool"></div>
   </div>
   <div class="card" style="margin-top:12px">
@@ -337,7 +338,7 @@ fetch("data.json").then(r=>r.json()).then(d=>{D=d;
   ["#ts-g","#ev-g","#ls-g"].forEach(s=>fill($(s),D.gauges,D.reference_gauge));
   const dsel=()=>fill($("#ev-d"),D.sites[$("#ev-s").value].map(String),"60");dsel();
   fill($("#ls-f"),Object.keys(D.features).map(f=>[f,D.features[f][0]]),"NV_VWC0_60");
-  $("#gal").innerHTML=["Fig02_timeseries_rain_VWC_suction","Fig02b_IETD_event_identification_example","Fig03_hydrological_index_extraction","Fig04_ED_space_event_classes","Fig05_infiltration_velocity_V_vs_NV","Fig06_landslide_timeline","Fig06b_rainfall_around_landslides","Fig07_boxplots_Salerno_GC","Fig07_boxplots_Albori","Fig07_boxplots_Cetara","Fig07_boxplots_Cetara_SC","Fig07_boxplots_Dragonea","Fig08_ROC_curves","Fig09_E_vs_VWC0_60_KDE","Fig10_antecedent_VWC_profiles","Fig11_discriminant_synthesis","Fig12_mahalanobis_and_accumulation_windows","Fig13_multivar_2var_heatmaps","Fig14_multivar_best_by_family","Fig15_multivar_scatter_examples","Fig16_indicator_performance","Fig17_indicator_timeline_best"]
+  $("#gal").innerHTML=["Fig02_timeseries_rain_VWC_suction","Fig02b_IETD_event_identification_example","Fig03_hydrological_index_extraction","Fig04_ED_space_event_classes","Fig05_infiltration_velocity_V_vs_NV","Fig06_landslide_timeline","Fig06b_rainfall_around_landslides","Fig07_boxplots_Salerno_GC","Fig07_boxplots_Albori","Fig07_boxplots_Cetara","Fig07_boxplots_Cetara_SC","Fig07_boxplots_Dragonea","Fig08_ROC_curves","Fig09_E_vs_VWC0_60_KDE","Fig10_antecedent_VWC_profiles","Fig11_discriminant_synthesis","Fig12_mahalanobis_and_accumulation_windows","Fig13_multivar_2var_heatmaps","Fig14_multivar_best_by_family","Fig15_multivar_scatter_examples","Fig16_indicator_performance","Fig17_indicator_timeline_best","Fig18_indicator_construction"]
     .map(f=>`<a href="figures/${f}.png" target="_blank"><img loading="lazy" src="figures/${f}.png" alt="${f}">${f}</a>`).join("");
   const T=D.tables;
   table($("#t07"),T.T07_infiltration_V_vs_NV,[["pair","coppia"],["metric","metrica"],["n_V","n V",0],["n_NV","n NV",0],["median_V","mediana V"],["median_NV","mediana NV"],["RB_V_vs_NV","RB"],["MWU_p","p"]]);

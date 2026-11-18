@@ -90,6 +90,8 @@ Pioggia gen 2025 – set 2026: 1694 mm (Salerno G.C.) – 2247 mm (Dragonea); 20
   | D + A7d + V ΔVWC 60 (risposta durante l'evento) | 0.78 | 0.03 | 0.30 | 0.75 | 0.99 |
   | selezione automatica nel fold, pioggia + VWC0 | 0.61 | 0.09 | 0.59 | 0.53 | 0.90 |
 
+  Schema e esempio numerico: `Fig18_indicator_construction` (`make_indicator_figure.py`).
+
   Aggiungere il VWC antecedente superficiale (NV 15 cm) alla cumulata dimezza i falsi allarmi (29 → 17) senza perdere frane. La selezione automatica della combinazione dentro ogni fold rende meno delle combinazioni fisse: con 3–4 frane per pluviometro scegliere tra molte combinazioni è instabile. Le combinazioni fisse sono state scelte dopo aver visto gli stessi dati, quindi la loro performance è ottimistica e va confermata su eventi futuri.
 - **Implicazione per la discussione / LEWS**: in questo dataset le variabili idrologiche non superano l'evento pluviometrico come singolo predittore, ma (i) la suzione superficiale antecedente e il VWC profondo descrivono lo stato di predisposizione invernale in cui cadono tutte le frane, (ii) la combinazione multivariata (Mahalanobis) separa bene le frane dagli eventi normali, e (iii) la vegetazione riduce in modo marcato l'ingresso d'acqua e la velocità di propagazione in profondità.
 
@@ -115,6 +117,7 @@ Nota rispetto all'indice: il punto 5 dell'indice ipotizza che il VWC a 60 cm abb
 | Fig12_mahalanobis_and_accumulation_windows | §3.3.4 + Patton | Distanza di Mahalanobis; AUC* vs finestra di accumulo |
 | Fig13_multivar_2var_heatmaps | 4.4 | AUC medio di tutte le coppie pioggia × acqua (D_M e PS) |
 | Fig14_multivar_best_by_family | 4.4 | Migliore combinazione per famiglia (1, 2, 3 variabili; VWC0 vs ΔVWC) |
+| Fig18_indicator_construction | 4.4 | Come è costruito l'indicatore (esempio Salerno G.C., E + VWC0 NV 15 cm, L1) |
 | Fig15_multivar_scatter_examples | 4.4 | E vs VWC0 (NV 15, V 60 cm) con ellisse di Mahalanobis 95% |
 
 Fig.1 (mappa) è già nella bozza del Cap. 2 e non è rigenerata.
