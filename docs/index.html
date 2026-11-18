@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Salerno Landslide Monitoring</title>
+<meta name="description" content="Dashboard: pioggia, contenuto d'acqua e suzione (siti V/NV) ed eventi franosi, Salerno 2025–2026">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.35.2/plotly.min.js"></script>
+<style>
+:root{--bg:#f7f7f4;--card:#ffffff;--ink:#1d2321;--muted:#5d6763;--line:#dfe3e0;--accent:#2e6b4f;--ls:#c62828;--v:#2e7d32;--nv:#b8860b;--chip:#eef2ef}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#121614;--card:#1b201e;--ink:#e6ebe8;--muted:#9aa5a0;--line:#2c3431;--accent:#6fbf98;--ls:#ef5350;--v:#66bb6a;--nv:#e0b04a;--chip:#232a27}}
+:root[data-theme="dark"]{--bg:#121614;--card:#1b201e;--ink:#e6ebe8;--muted:#9aa5a0;--line:#2c3431;--accent:#6fbf98;--ls:#ef5350;--v:#66bb6a;--nv:#e0b04a;--chip:#232a27}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:14px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+header{padding:20px 16px 8px;max-width:1280px;margin:auto}
+h1{font-size:20px;margin:0 0 4px}
+.sub{color:var(--muted);font-size:13px}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--line)}
+nav .in{max-width:1280px;margin:auto;padding:0 16px;display:flex;gap:4px;overflow-x:auto}
+nav button{background:none;border:0;border-bottom:2px solid transparent;color:var(--muted);padding:10px 12px;font:inherit;cursor:pointer;white-space:nowrap}
+nav button.on{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
+main{max-width:1280px;margin:auto;padding:16px}
+section{display:none}section.on{display:block}
+.grid{display:grid;gap:12px}
+.g4{grid-template-columns:repeat(auto-fit,minmax(180px,1fr))}
+.g2{grid-template-columns:repeat(auto-fit,minmax(420px,1fr))}
+@media(max-width:520px){.g2{grid-template-columns:1fr}}
+.g2>*,.g4>*{min-width:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px;min-width:0}
+.card h3{margin:0 0 6px;font-size:14px}
+.kpi .v{font-size:24px;font-weight:650}
+.kpi .l{color:var(--muted);font-size:12px}
+.ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:8px;font-size:13px}
+select,input{background:var(--chip);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:4px 8px;font:inherit}
+.plot{width:100%;min-height:340px}
+.tall{min-height:640px}
+.note{color:var(--muted);font-size:12px;margin-top:6px}
+table{border-collapse:collapse;width:100%;font-size:12px}
+th,td{padding:4px 6px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{position:sticky;top:0;background:var(--card);cursor:pointer;text-align:right}
+td:first-child,th:first-child{text-align:left}
+tr.ls td{color:var(--ls);font-weight:600}
+.tw{max-height:460px;overflow:auto}
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.gal a{display:block;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:6px;color:var(--ink);text-decoration:none;font-size:12px}
+.gal img{width:100%;border-radius:4px;background:#fff}
+.tag{display:inline-block;background:var(--chip);border-radius:4px;padding:0 6px;margin-right:4px;font-size:12px}
+.theme{position:absolute;right:16px;top:18px}
+p{margin:6px 0}
+</style>
+</head>
+<body>
+<header style="position:relative">
+  <h1>Pioggia, umidità e suzione del suolo ed eventi franosi — sito di Salerno</h1>
+  <div class="sub">5 pluviometri CF Campania (10 min) · verticali METER vegetata (V) e non vegetata (NV), TEROS 10/21 (5 min) · gen 2025 – set 2026 · 4 frane</div>
+  <select class="theme" id="theme" aria-label="tema"><option value="">auto</option><option value="light">chiaro</option><option value="dark">scuro</option></select>
+</header>
+<nav><div class="in" id="tabs"></div></nav>
+<main>
+<section id="s-over">
+  <div class="grid g4" id="kpis"></div>
+  <div class="card" style="margin-top:12px">
+    <div class="ctl">Pluviometro <select id="ts-g"></select>
+      Profondità <select id="ts-d"><option value="all">tutte</option><option value="15">15 cm</option><option value="mid">30/35 cm</option><option value="60">60 cm</option></select>
+      <span class="note">serie orarie; trascina per zoomare, doppio click per reset · linee rosse: frane</span></div>
+    <div id="ts" class="plot tall"></div>
+  </div>
+</section>
+
+<section id="s-ev">
+  <div class="card">
+    <div class="ctl">Pluviometro <select id="ev-g"></select> Sito <select id="ev-s"><option>NV</option><option>V</option></select>
+      Profondità <select id="ev-d"></select></div>
+    <div class="grid g2">
+      <div id="ed" class="plot"></div>
+      <div id="cls" class="plot"></div>
+    </div>
+    <div class="note">Eventi identificati con IETD = 24 h ed E ≥ 10 mm. Classi: irrelevant ΔVWC &lt; 0.05·VWC0; relevant/extreme con z(ΔVWC) &lt; / ≥ 1. ★ = evento con frana.</div>
+  </div>
+  <div class="card" style="margin-top:12px"><h3>Elenco eventi</h3><div class="tw" id="ev-tab"></div></div>
+</section>
+
+<section id="s-inf">
+  <div class="grid g2">
+    <div class="card"><div class="ctl">Metrica <select id="inf-m"><option value="v_peak_cmh">velocità picco–picco Δz/Δt</option><option value="v_onset_cmh">velocità fronte di bagnamento</option></select></div><div id="inf" class="plot"></div></div>
+    <div class="card"><div class="ctl">Variabile <select id="pv"><option value="dVWC">ΔVWC</option><option value="VWC0">VWC0</option><option value="ds">Δs (kPa)</option><option value="s0">s0 (kPa)</option></select></div><div id="pair" class="plot"></div></div>
+  </div>
+  <div class="grid g2" style="margin-top:12px">
+    <div class="card"><h3>V vs NV — velocità (Mann–Whitney)</h3><div class="tw" id="t07"></div></div>
+    <div class="card"><h3>V vs NV — appaiato per evento (Wilcoxon)</h3><div class="tw" id="t08"></div></div>
+  </div>
+  <p class="note">Eventi del pluviometro di riferimento (Salerno G.C.).</p>
+</section>
+
+<section id="s-ls">
+  <div class="card"><h3>Frane</h3><div id="ls-tab" class="tw"></div></div>
+  <div class="card" style="margin-top:12px">
+    <div class="ctl">Pluviometro <select id="ls-g"></select> Variabile <select id="ls-f"></select></div>
+    <div class="grid g2"><div id="strip" class="plot"></div><div id="roc" class="plot"></div></div>
+    <div id="fstat" class="note"></div>
+  </div>
+  <div class="grid g2" style="margin-top:12px">
+    <div class="card"><h3>AUC* per variabile e pluviometro</h3><div id="heat" class="plot tall"></div></div>
+    <div class="card"><h3>Spazio E – VWC0 60 cm (NV)</h3><div id="sc" class="plot"></div>
+      <h3 style="margin-top:12px">Distanza di Mahalanobis (E, I_max, VWC0 NV 60)</h3><div id="mah" class="plot"></div></div>
+  </div>
+  <div class="card" style="margin-top:12px"><h3>Metriche discriminanti — pluviometro selezionato</h3><div class="tw" id="dt-tab"></div>
+    <div class="note">AUC* = max(AUC, 1−AUC); RB = rank-biserial; p Mann–Whitney bilaterale, p_adj Holm su tutte le variabili del pluviometro; soglia di Youden, recall e FPR calcolati sugli stessi eventi (in-sample, 3–4 frane): valori descrittivi, non prestazioni predittive.</div></div>
+</section>
+
+<section id="s-fig"><div class="gal" id="gal"></div></section>
+
+<section id="s-met"><div class="card">
+  <h3>Metodi (sintesi)</h3>
+  <p><span class="tag">Eventi</span> IETD con T<sub>s</sub> = 24 h; eventi con E &lt; 10 mm scartati. D = t<sub>end</sub> − t<sub>start</sub>, I<sub>max</sub> = massimo su 60 min mobili, P<sub>1–24h</sub> massimi mobili nell'evento, A<sub>3–30d</sub> pioggia antecedente.</p>
+  <p><span class="tag">Indici idrologici</span> VWC0 e s0 = media dei 60 min prima dell'evento; picco VWC e suzione minima in [t<sub>start</sub>, t<sub>end</sub> + 24 h]; ΔVWC = VWC<sub>peak</sub> − VWC0; Δs = s<sub>min</sub> − s0.</p>
+  <p><span class="tag">Infiltrazione</span> v = Δz/Δt tra i picchi di VWC a profondità successive (eventi non irrilevanti a entrambe le profondità); in alternativa arrivo del fronte (VWC ≥ VWC0 + 10% ΔVWC).</p>
+  <p><span class="tag">Frane</span> Frana associata all'evento la cui finestra [t<sub>start</sub>, t<sub>end</sub>+24 h] interseca l'intervallo di incertezza dell'orario. A Dragonea e Salerno G.C. L3 e L4 cadono nello stesso evento.</p>
+  <p><span class="tag">Orari</span> Tutto in UTC+1; il logger METER passa all'ora legale il 29/03/2026 ed è stato riportato a UTC+1.</p>
+  <p>Codice, parametri (<code>config.yaml</code>) e tabelle complete: <a href="https://github.com/angelounisa/Sustainabilty">repository GitHub</a>.</p>
+</div></section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+let D;
+const TABS=[["s-over","Panoramica"],["s-ev","Eventi"],["s-inf","Infiltrazione V/NV"],["s-ls","Frane vs non frane"],["s-fig","Figure"],["s-met","Metodi"]];
+const CLS={irrelevant:"#9e9e9e",relevant:"#f2c14e",extreme:"#d1495b",null:"#ffffff"};
+const DC={15:"#4c9be8",30:"#e8834c",35:"#e8834c",60:"#7e57c2"};
+const cfg={responsive:true,displaylogo:false};
+function lay(extra){return Object.assign({paper_bgcolor:"rgba(0,0,0,0)",plot_bgcolor:"rgba(0,0,0,0)",
+  font:{color:css("--ink"),size:11},margin:{l:56,r:16,t:30,b:44},legend:{orientation:"h",y:-0.18},
+  xaxis:{gridcolor:css("--line")},yaxis:{gridcolor:css("--line")}},extra||{})}
+const fmt=(v,n=3)=>v==null?"–":(typeof v==="number"&&v!==0&&Math.abs(v)<0.001)?v.toExponential(1):(typeof v==="number"?(Math.abs(v)>=100?v.toFixed(1):+v.toFixed(n)):v);
+
+function table(el,rows,cols,opts={}){
+  let sortK=null,asc=true;
+  const draw=()=>{let r=rows.slice();if(sortK)r.sort((a,b)=>{const x=a[sortK],y=b[sortK];if(x==null)return 1;if(y==null)return -1;return (x>y?1:x<y?-1:0)*(asc?1:-1)});
+    el.innerHTML="<table><thead><tr>"+cols.map(c=>`<th data-k="${c[0]}">${c[1]}</th>`).join("")+"</tr></thead><tbody>"+
+    r.map(x=>`<tr class="${opts.hl&&opts.hl(x)?"ls":""}">`+cols.map(c=>`<td>${fmt(x[c[0]],c[2]??3)}</td>`).join("")+"</tr>").join("")+"</tbody></table>";
+    el.querySelectorAll("th").forEach(th=>th.onclick=()=>{const k=th.dataset.k;asc=sortK===k?!asc:true;sortK=k;draw()})};
+  draw();
+}
+function fill(sel,opts,val){sel.innerHTML=opts.map(o=>Array.isArray(o)?`<option value="${o[0]}">${o[1]}</option>`:`<option>${o}</option>`).join("");if(val)sel.value=val}
+
+// ---------- overview
+function kpis(){
+  const ev=D.events, g=D.reference_gauge;
+  const tot=D.gauges.map(x=>D.timeseries["rain|"+x].reduce((a,b)=>a+(b||0),0));
+  const k=[["Periodo","gen 2025 – set 2026","pluviometri 10 min; suolo dal 31/01/2025"],
+    ["Pioggia totale",`${Math.min(...tot).toFixed(0)}–${Math.max(...tot).toFixed(0)} mm`,"range sui 5 pluviometri"],
+    ["Eventi (E ≥ 10 mm)",`${Math.min(...D.gauges.map(x=>ev.filter(e=>e.gauge===x).length))}–${Math.max(...D.gauges.map(x=>ev.filter(e=>e.gauge===x).length))}`,"per pluviometro"],
+    ["Frane",D.landslides.length,"L1 26/10/25 · L2 25/11/25 · L3 06/02/26 · L4 12/02/26"]];
+  $("#kpis").innerHTML=k.map(x=>`<div class="card kpi"><div class="l">${x[0]}</div><div class="v">${x[1]}</div><div class="l">${x[2]}</div></div>`).join("");
+}
+function ts(){
+  const T=D.timeseries,t=T.t,g=$("#ts-g").value,dsel=$("#ts-d").value,tr=[];
+  tr.push({x:t,y:T["rain|"+g],type:"bar",name:"pioggia "+g+" (mm/h)",marker:{color:"#1f77b4"},yaxis:"y"});
+  const rows=[["V","VWC","y2"],["V","s","y3"],["NV","VWC","y4"],["NV","s","y5"]];
+  rows.forEach(([s,v,ax])=>D.sites[s].forEach((d,i)=>{
+    if(dsel!=="all"&&!(dsel==String(d)||(dsel==="mid"&&i===1)))return;
+    tr.push({x:t,y:T[`${s}|${v}_${d}`],type:"scattergl",mode:"lines",line:{width:1,color:DC[d]},name:`${s} ${v==="s"?"suzione":"VWC"} ${d} cm`,yaxis:ax,showlegend:v==="VWC"})}));
+  const shapes=D.landslides.map(l=>({type:"line",xref:"x",yref:"paper",x0:l.datetime_local,x1:l.datetime_local,y0:0,y1:1,line:{color:css("--ls"),width:1,dash:"dash"}}));
+  const ann=D.landslides.map(l=>({x:l.datetime_local,y:1.01,xref:"x",yref:"paper",text:l.id,showarrow:false,font:{color:css("--ls"),size:10}}));
+  const ya=(dom,title,log)=>({domain:dom,title:{text:title,font:{size:10}},gridcolor:css("--line"),type:log?"log":"linear"});
+  Plotly.react("ts",tr,lay({shapes,annotations:ann,height:680,showlegend:true,margin:{l:70,r:16,t:20,b:40},
+    xaxis:{gridcolor:css("--line"),anchor:"y5"},
+    yaxis:ya([.84,1],"P (mm/h)"),yaxis2:ya([.63,.81],"VWC V"),yaxis3:ya([.42,.6],"s V (kPa)",1),
+    yaxis4:ya([.21,.39],"VWC NV"),yaxis5:ya([0,.18],"s NV (kPa)",1),legend:{orientation:"h",y:-0.06}}),cfg);
+}
+// ---------- events
+function events(){
+  const g=$("#ev-g").value,s=$("#ev-s").value,d=$("#ev-d").value,E=D.events.filter(e=>e.gauge===g),key=`${s}_class_${d}`;
+  const tr=["irrelevant","relevant","extreme",null].map(c=>{const r=E.filter(e=>e[key]===c);
+    return {x:r.map(e=>e.D_h),y:r.map(e=>e.E_mm),text:r.map(e=>`${e.event_id}<br>${e.t_start}<br>ΔVWC=${fmt(e[`${s}_dVWC_${d}`])}`),hoverinfo:"text",
+    mode:"markers",type:"scatter",name:`${c??"senza dati suolo"} (${r.length})`,marker:{size:9,color:CLS[c],line:{color:"#333",width:.6}}}});
+  const L=E.filter(e=>e.Y);
+  tr.push({x:L.map(e=>e.D_h),y:L.map(e=>e.E_mm),mode:"markers+text",text:L.map(e=>e.landslide),textposition:"top right",type:"scatter",name:"frana",
+    marker:{symbol:"star-open",size:20,color:css("--ls"),line:{width:2}},textfont:{color:css("--ls")}});
+  Plotly.react("ed",tr,lay({title:{text:`E–D, classi ${s} ${d} cm`,font:{size:12}},xaxis:{type:"log",title:"D (h)",gridcolor:css("--line")},yaxis:{type:"log",title:"E (mm)",gridcolor:css("--line")}}),cfg);
+  const v0=E.map(e=>e[`${s}_VWC0_${d}`]),dv=E.map(e=>e[`${s}_dVWC_${d}`]);
+  Plotly.react("cls",[{x:v0,y:dv,mode:"markers",type:"scatter",text:E.map(e=>e.event_id+(e.landslide?" — "+e.landslide:"")),
+     marker:{size:E.map(e=>e.Y?16:8),symbol:E.map(e=>e.Y?"star":"circle"),color:E.map(e=>CLS[e[key]]),line:{color:"#333",width:.6}},name:"eventi"},
+    {x:[0,.4],y:[0,.02],mode:"lines",line:{dash:"dot",color:css("--muted")},name:"ΔVWC = 0.05·VWC0"}],
+    lay({title:{text:"ΔVWC vs VWC0",font:{size:12}},xaxis:{title:"VWC0 (m³/m³)",gridcolor:css("--line")},yaxis:{title:"ΔVWC (m³/m³)",gridcolor:css("--line")}}),cfg);
+  table($("#ev-tab"),E,[["event_id","evento"],["t_start","inizio"],["t_end","fine"],["D_h","D (h)",1],["E_mm","E (mm)",1],["Imax_mmh","Imax (mm/h)",1],["P24h_mm","P24h",1],["A30d_mm","A30d",1],
+    [`${s}_VWC0_${d}`,"VWC0"],[`${s}_dVWC_${d}`,"ΔVWC"],[`${s}_s0_${d}`,"s0 (kPa)",1],[`${s}_ds_${d}`,"Δs (kPa)",1],[key,"classe"],["landslide","frana"]],{hl:x=>x.Y});
+}
+// ---------- infiltration
+function infil(){
+  const m=$("#inf-m").value,V=D.velocity.filter(v=>v.gauge===D.reference_gauge);
+  const groups=[["V","15-35"],["NV","15-30"],["V","35-60"],["NV","30-60"],["V","15-60"],["NV","15-60"]];
+  const tr=groups.map(([s,p])=>{const r=V.filter(v=>v.site===s&&v.pair===p&&v[m]!=null);
+    return {y:r.map(v=>v[m]),x:r.map(()=>`${s} ${p} cm`),type:"box",boxpoints:"all",jitter:.4,pointpos:0,name:s,legendgroup:s,showlegend:p==="15-60",
+      text:r.map(v=>v.event_id),marker:{color:css(s==="V"?"--v":"--nv"),size:5},line:{color:css(s==="V"?"--v":"--nv")}}});
+  Plotly.react("inf",tr,lay({yaxis:{type:"log",title:"v (cm/h)",gridcolor:css("--line")},xaxis:{gridcolor:css("--line")}}),cfg);
+  const pv=$("#pv").value,E=D.events.filter(e=>e.gauge===D.reference_gauge),pairs=[[15,15],[35,30],[60,60]];
+  const t2=pairs.map(([a,b])=>({x:E.map(e=>e[`NV_${pv}_${b}`]),y:E.map(e=>e[`V_${pv}_${a}`]),mode:"markers",type:"scatter",name:`V ${a} / NV ${b} cm`,
+    text:E.map(e=>e.event_id+(e.landslide?" — "+e.landslide:"")),marker:{color:DC[a],size:E.map(e=>e.Y?14:7),symbol:E.map(e=>e.Y?"star":"circle"),line:{color:"#333",width:.5}}}));
+  const all=t2.flatMap(t=>t.x.concat(t.y)).filter(v=>v!=null),lo=Math.min(...all),hi=Math.max(...all);
+  const log=pv==="s0";
+  t2.push({x:[lo,hi],y:[lo,hi],mode:"lines",line:{dash:"dash",color:css("--muted")},name:"1:1"});
+  Plotly.react("pair",t2,lay({xaxis:{title:`NV ${pv}`,gridcolor:css("--line"),type:log?"log":"linear"},yaxis:{title:`V ${pv}`,gridcolor:css("--line"),type:log?"log":"linear"}}),cfg);
+}
+// ---------- landslides
+function auc(x1,x0){let s=0;for(const a of x1)for(const b of x0)s+=a>b?1:a===b?.5:0;return s/(x1.length*x0.length)}
+function lsec(){
+  const g=$("#ls-g").value,f=$("#ls-f").value,E=D.events.filter(e=>e.gauge===g&&e[f]!=null),lab=D.features[f][0];
+  const x0=E.filter(e=>!e.Y),x1=E.filter(e=>e.Y);
+  Plotly.react("strip",[{y:x0.map(e=>e[f]),x:x0.map(()=>"no frana"),type:"box",boxpoints:"all",jitter:.5,pointpos:0,name:"no frana",text:x0.map(e=>e.event_id),marker:{color:"#7f8c8d",size:6}},
+    {y:x1.map(e=>e[f]),x:x1.map(()=>"frana"),type:"box",boxpoints:"all",jitter:0,pointpos:0,name:"frana",text:x1.map(e=>e.event_id+" "+e.landslide),marker:{color:css("--ls"),size:14,symbol:"star"}}],
+    lay({title:{text:lab,font:{size:12}},showlegend:false,yaxis:{title:lab,gridcolor:css("--line"),type:/s0|smin/.test(f)?"log":"linear"}}),cfg);
+  const st=D.discriminant.find(r=>r.gauge===g&&r.feature===f);
+  const sgn=st&&st.direction==="<="?-1:1,v=E.map(e=>sgn*e[f]),y=E.map(e=>e.Y),c=[...new Set(v)].sort((a,b)=>b-a);
+  const n1=y.filter(a=>a).length,n0=y.length-n1,fpr=[0],tpr=[0];
+  c.forEach(th=>{let tp=0,fp=0;v.forEach((a,i)=>{if(a>=th){if(y[i])tp++;else fp++}});fpr.push(fp/n0);tpr.push(tp/n1)});
+  Plotly.react("roc",[{x:fpr,y:tpr,mode:"lines",line:{shape:"hv",color:css("--accent"),width:2},name:"ROC"},{x:[0,1],y:[0,1],mode:"lines",line:{dash:"dot",color:css("--muted")},name:"casuale"},
+    ...(st?[{x:[st.FPR],y:[st.recall],mode:"markers",marker:{size:11,color:css("--ls")},name:"soglia Youden"}]:[])],
+    lay({title:{text:`ROC — AUC* = ${st?fmt(st.AUC_star):"–"}`,font:{size:12}},xaxis:{title:"FPR",range:[0,1],gridcolor:css("--line")},yaxis:{title:"TPR (recall)",range:[0,1.02],gridcolor:css("--line")}}),cfg);
+  $("#fstat").innerHTML=st?`n frane = ${st.n_ls}, n non frane = ${st.n_nols} · AUC* = ${fmt(st.AUC_star)} · RB = ${fmt(st.RB)} · p = ${fmt(st.p)} (Holm ${fmt(st.p_adj)}) · percentile mediano frane = ${fmt(st.median_pct,1)} · soglia Youden ${st.direction} ${fmt(st.threshold)} (recall ${fmt(st.recall)}, FPR ${fmt(st.FPR)})`+(st.physics_consistent?"":" · <b>direzione opposta a quella fisicamente attesa</b>"):"";
+  table($("#dt-tab"),D.discriminant.filter(r=>r.gauge===g),[["label","variabile"],["n_ls","n frane",0],["AUC_star","AUC*"],["RB","RB"],["p","p"],["p_adj","p Holm"],["median_pct","perc. mediano",1],["direction","dir."],["threshold","soglia Youden"],["recall","recall"],["FPR","FPR"],["mean_ls","media frane"],["mean_nols","media no frane"]]);
+  // scatter E vs VWC0 NV 60
+  const S=D.events.filter(e=>e.gauge===g&&e.NV_VWC0_60!=null),a=S.filter(e=>!e.Y),b=S.filter(e=>e.Y);
+  Plotly.react("sc",[{x:a.map(e=>e.NV_VWC0_60),y:a.map(e=>e.E_mm),type:"histogram2dcontour",colorscale:[[0,"rgba(76,155,232,0)"],[.15,"rgba(76,155,232,.15)"],[1,"rgba(30,90,170,.75)"]],showscale:false,ncontours:8,nbinsx:12,nbinsy:12,line:{width:.5},name:"densità no frana",hoverinfo:"skip"},
+    {x:a.map(e=>e.NV_VWC0_60),y:a.map(e=>e.E_mm),mode:"markers",type:"scatter",marker:{color:"#555",size:6},text:a.map(e=>e.event_id),name:"no frana"},
+    {x:b.map(e=>e.NV_VWC0_60),y:b.map(e=>e.E_mm),mode:"markers+text",type:"scatter",text:b.map(e=>e.landslide),textposition:"top right",marker:{color:css("--ls"),size:18,symbol:"star",line:{color:"#000",width:1}},name:"frana"}],
+    lay({xaxis:{title:"VWC0 60 cm NV (m³/m³)",gridcolor:css("--line")},yaxis:{title:"E (mm)",gridcolor:css("--line")}}),cfg);
+  const M=D.mahalanobis.filter(r=>r.gauge===g),thr=M[0].thr;
+  Plotly.react("mah",[{y:M.filter(r=>!r.Y).map(r=>r.D_M),x:M.filter(r=>!r.Y).map(()=>"no frana"),type:"box",boxpoints:"all",jitter:.5,pointpos:0,marker:{color:"#7f8c8d"},name:"no frana"},
+    {y:M.filter(r=>r.Y).map(r=>r.D_M),x:M.filter(r=>r.Y).map(()=>"frana"),type:"box",boxpoints:"all",jitter:0,pointpos:0,text:M.filter(r=>r.Y).map(r=>r.landslide),marker:{color:css("--ls"),size:14,symbol:"star"},name:"frana"}],
+    lay({showlegend:false,height:300,shapes:[{type:"line",xref:"paper",x0:0,x1:1,y0:thr,y1:thr,line:{color:"orange",dash:"dash"}}],yaxis:{title:"D_M",gridcolor:css("--line")},
+      annotations:[{xref:"paper",x:1,y:thr,text:`χ²₃ 95% = ${thr.toFixed(2)}`,showarrow:false,yanchor:"bottom",xanchor:"right",font:{size:10}}]}),cfg);
+}
+function heat(){
+  const feats=Object.keys(D.features).filter(f=>!/VWCpk/.test(f));
+  const mean=f=>D.gauges.reduce((s,g)=>{const r=D.discriminant.find(x=>x.gauge===g&&x.feature===f);return s+(r?r.AUC_star:0)},0)/D.gauges.length;
+  feats.sort((a,b)=>mean(a)-mean(b));
+  const z=feats.map(f=>D.gauges.map(g=>{const r=D.discriminant.find(x=>x.gauge===g&&x.feature===f);return r?r.AUC_star:null}));
+  const txt=feats.map(f=>D.gauges.map(g=>{const r=D.discriminant.find(x=>x.gauge===g&&x.feature===f);return r?(r.AUC_star.toFixed(2)+(r.p<.05?"*":"")):""}));
+  Plotly.react("heat",[{z,x:D.gauges,y:feats.map(f=>D.features[f][0]),type:"heatmap",colorscale:"RdYlGn",reversescale:true,zmin:.5,zmax:1,text:txt,texttemplate:"%{text}",textfont:{size:9},colorbar:{title:"AUC*"}}],
+    lay({height:820,margin:{l:130,r:10,t:10,b:60},xaxis:{side:"bottom"}}),cfg);
+}
+function lstab(){
+  const rows=D.landslides.map(l=>{const o={...l};D.gauges.forEach(g=>{const e=D.events.find(e=>e.gauge===g&&(e.landslide||"").split(",").includes(l.id));o[g]=e?`${e.event_id} · E=${e.E_mm.toFixed(0)} mm · D=${e.D_h.toFixed(0)} h · Imax=${e.Imax_mmh.toFixed(0)}`:"–"});return o});
+  table($("#ls-tab"),rows,[["id","id"],["datetime_local","data/ora"],["location","località"],["time_note","nota"],...D.gauges.map(g=>[g,g])]);
+}
+// ---------- init
+fetch("data.json").then(r=>r.json()).then(d=>{D=d;
+  $("#tabs").innerHTML=TABS.map((t,i)=>`<button data-s="${t[0]}" class="${i?"":"on"}">${t[1]}</button>`).join("");
+  document.querySelectorAll("#tabs button").forEach(b=>b.onclick=()=>{document.querySelectorAll("#tabs button,section").forEach(x=>x.classList.remove("on"));b.classList.add("on");$("#"+b.dataset.s).classList.add("on");$("#"+b.dataset.s).querySelectorAll(".js-plotly-plot").forEach(el=>Plotly.Plots.resize(el));try{localStorage.setItem("tab",b.dataset.s)}catch(e){}});
+  $("#s-over").classList.add("on");
+  ["#ts-g","#ev-g","#ls-g"].forEach(s=>fill($(s),D.gauges,D.reference_gauge));
+  const dsel=()=>fill($("#ev-d"),D.sites[$("#ev-s").value].map(String),"60");dsel();
+  fill($("#ls-f"),Object.keys(D.features).map(f=>[f,D.features[f][0]]),"NV_VWC0_60");
+  $("#gal").innerHTML=["Fig02_timeseries_rain_VWC_suction","Fig02b_IETD_event_identification_example","Fig03_hydrological_index_extraction","Fig04_ED_space_event_classes","Fig05_infiltration_velocity_V_vs_NV","Fig06_landslide_timeline","Fig06b_rainfall_around_landslides","Fig07_boxplots_Salerno_GC","Fig07_boxplots_Albori","Fig07_boxplots_Cetara","Fig07_boxplots_Cetara_SC","Fig07_boxplots_Dragonea","Fig08_ROC_curves","Fig09_E_vs_VWC0_60_KDE","Fig10_antecedent_VWC_profiles","Fig11_discriminant_synthesis","Fig12_mahalanobis_and_accumulation_windows"]
+    .map(f=>`<a href="figures/${f}.png" target="_blank"><img loading="lazy" src="figures/${f}.png" alt="${f}">${f}</a>`).join("");
+  const T=D.tables;
+  table($("#t07"),T.T07_infiltration_V_vs_NV,[["pair","coppia"],["metric","metrica"],["n_V","n V",0],["n_NV","n NV",0],["median_V","mediana V"],["median_NV","mediana NV"],["RB_V_vs_NV","RB"],["MWU_p","p"]]);
+  table($("#t08"),T.T08_V_vs_NV_paired_by_event,[["variable","var."],["depth_V","z V",0],["depth_NV","z NV",0],["n_events","n",0],["median_V","mediana V"],["median_NV","mediana NV"],["frac_events_V_lt_NV","frazione V&lt;NV"],["wilcoxon_p","p"]]);
+  kpis();ts();events();infil();lsec();heat();lstab();
+  $("#ts-g").onchange=ts;$("#ts-d").onchange=ts;
+  $("#ev-s").onchange=()=>{dsel();events()};$("#ev-g").onchange=events;$("#ev-d").onchange=events;
+  $("#inf-m").onchange=infil;$("#pv").onchange=infil;$("#ls-g").onchange=lsec;$("#ls-f").onchange=lsec;
+  try{const t=localStorage.getItem("tab");if(t)document.querySelector(`#tabs button[data-s="${t}"]`)?.click()}catch(e){}
+});
+const th=$("#theme");try{th.value=localStorage.getItem("theme")||""}catch(e){}
+const applyTheme=()=>{if(th.value)document.documentElement.dataset.theme=th.value;else delete document.documentElement.dataset.theme;
+  try{localStorage.setItem("theme",th.value)}catch(e){}; if(D){ts();events();infil();lsec();heat()}};
+th.onchange=applyTheme;if(th.value)document.documentElement.dataset.theme=th.value;
+</script>
+</body>
+</html>

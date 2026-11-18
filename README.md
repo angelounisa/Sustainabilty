@@ -11,8 +11,12 @@ data/processed/        serie pulite in UTC+1, eventi, indici (pickle/csv.gz)
 src/                   io_data.py (QC), events.py (IETD + indici), stats_ls.py (statistiche Cap. 4)
 run_analysis.py        pipeline -> outputs/tables/*.csv
 make_figures.py        figure -> outputs/figures/*.png
+make_dashboard.py      esporta dati e figure in docs/ (sito GitHub Pages)
+docs/                  dashboard (index.html + data.json + figures/)
 ```
-Riproduzione: `pip install -r requirements.txt && python run_analysis.py && python make_figures.py`.
+Riproduzione: `pip install -r requirements.txt && python run_analysis.py && python make_figures.py && python make_dashboard.py`.
+
+**Dashboard interattiva:** https://angelounisa.github.io/Sustainabilty/ (GitHub Pages, cartella `docs/`, generata da `make_dashboard.py`).
 
 ---
 
