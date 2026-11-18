@@ -1,0 +1,127 @@
+[
+{
+"file": "Fig02_timeseries_rain_VWC_suction.png",
+"tab": "s-over",
+"caption": "Serie storiche: pioggia, VWC e suzione nei siti V e NV, con le frane"
+},
+{
+"file": "Fig03_hydrological_index_extraction.png",
+"tab": "s-over",
+"caption": "Estrazione degli indici idrologici sull'evento di L1"
+},
+{
+"file": "Fig02b_IETD_event_identification_example.png",
+"tab": "s-ev",
+"caption": "Identificazione degli eventi (IETD 24 h, E ≥ 10 mm)"
+},
+{
+"file": "Fig04_ED_space_event_classes.png",
+"tab": "s-ev",
+"caption": "Eventi nello spazio E–D per classe di risposta, sito e profondità"
+},
+{
+"file": "Fig05_infiltration_velocity_V_vs_NV.png",
+"tab": "s-inf",
+"caption": "Velocità di infiltrazione (0–15, 15–30/35, 30/35–60, 15–60 cm) e ΔVWC V vs NV"
+},
+{
+"file": "Fig06_landslide_timeline.png",
+"tab": "s-ls",
+"caption": "Timeline delle frane e degli eventi per pluviometro"
+},
+{
+"file": "Fig06b_rainfall_around_landslides.png",
+"tab": "s-ls",
+"caption": "Pioggia cumulata intorno a ciascuna frana"
+},
+{
+"file": "Fig07_boxplots_Salerno_GC.png",
+"tab": "s-ls",
+"caption": "Boxplot frana vs non frana — Salerno G.C."
+},
+{
+"file": "Fig07_boxplots_Albori.png",
+"tab": "s-ls",
+"caption": "Boxplot frana vs non frana — Albori"
+},
+{
+"file": "Fig07_boxplots_Cetara.png",
+"tab": "s-ls",
+"caption": "Boxplot frana vs non frana — Cetara"
+},
+{
+"file": "Fig07_boxplots_Cetara_SC.png",
+"tab": "s-ls",
+"caption": "Boxplot frana vs non frana — Cetara S.C."
+},
+{
+"file": "Fig07_boxplots_Dragonea.png",
+"tab": "s-ls",
+"caption": "Boxplot frana vs non frana — Dragonea"
+},
+{
+"file": "Fig08_ROC_curves.png",
+"tab": "s-ls",
+"caption": "Curve ROC dei singoli predittori"
+},
+{
+"file": "Fig09_E_vs_VWC0_60_KDE.png",
+"tab": "s-ls",
+"caption": "Spazio E – VWC0 60 cm con densità degli eventi senza frana"
+},
+{
+"file": "Fig10_antecedent_VWC_profiles.png",
+"tab": "s-ls",
+"caption": "Profili di VWC antecedente: frane vs eventi normali"
+},
+{
+"file": "Fig11_discriminant_synthesis.png",
+"tab": "s-ls",
+"caption": "Sintesi del potere discriminante (AUC*, rank-biserial)"
+},
+{
+"file": "Fig12_mahalanobis_and_accumulation_windows.png",
+"tab": "s-ls",
+"caption": "Mahalanobis e AUC per finestra di accumulo"
+},
+{
+"file": "Fig13_multivar_2var_heatmaps.png",
+"tab": "s-mv",
+"caption": "Tutte le coppie pioggia × contenuto d'acqua"
+},
+{
+"file": "Fig14_multivar_best_by_family.png",
+"tab": "s-mv",
+"caption": "Migliore combinazione per famiglia (1, 2, 3 variabili)"
+},
+{
+"file": "Fig15_multivar_scatter_examples.png",
+"tab": "s-mv",
+"caption": "Esempi E vs VWC0 con ellisse di Mahalanobis"
+},
+{
+"file": "Fig18_indicator_construction.png",
+"tab": "s-ind",
+"caption": "Come è costruito l'indicatore (esempio numerico)"
+},
+{
+"file": "Fig16_indicator_performance.png",
+"tab": "s-ind",
+"caption": "Performance in validazione di tutti gli indicatori, per pluviometro"
+},
+{
+"file": "Fig19_indicator_TSS_vs_nvars.png",
+"tab": "s-ind",
+"caption": "TSS in funzione del numero di variabili"
+},
+{
+"file": "Fig20_indicator_all_3var.png",
+"tab": "s-ind",
+"caption": "Tutti gli indicatori a 3 variabili"
+},
+{
+"file": "Fig17_indicator_timeline_best.png",
+"tab": "s-ind",
+"caption": "Valore dell'indicatore migliore evento per evento"
+}
+]

@@ -128,7 +128,6 @@ p{margin:6px 0}
   <div class="card">
     <h3>Indicatore frana / no frana per pluviometro</h3>
     <p class="note">I = media dei percentili delle variabili rispetto agli eventi senza frana (verso critico: più pioggia, suolo più umido, suzione più bassa), scala 0–100. Allarme se I ≥ soglia di Youden. Valutazione <b>leave-one-event-out</b>: per ogni evento riferimento e soglia sono calcolati senza quell'evento. Le strategie "SEL" scelgono anche la combinazione dentro ogni fold. POD = frane rilevate; POFD = falsi allarmi / eventi senza frana; FAR = falsi allarmi / allarmi; TSS = POD − POFD. Le combinazioni fisse sono state scelte dopo l'analisi multivariata sugli stessi dati: le loro prestazioni sono ottimistiche; le "SEL" danno la stima onesta del costo di scegliere.</p>
-    <a href="figures/Fig18_indicator_construction.png" target="_blank"><img src="figures/Fig18_indicator_construction.png" alt="Costruzione dell'indicatore" style="width:100%;border-radius:6px;background:#fff;margin:6px 0 12px"></a>
     <div class="tw" id="ind-pool"></div>
   </div>
   <div class="card" style="margin-top:12px">
@@ -136,6 +135,12 @@ p{margin:6px 0}
     <div class="grid g2"><div id="ind-bars" class="plot"></div><div id="ind-cm" class="plot"></div></div>
     <div id="ind-time" class="plot" style="min-height:300px"></div>
     <div id="ind-note" class="note"></div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <h3>Tutti gli indicatori a 3 variabili (455 combinazioni, validazione leave-one-event-out)</h3>
+    <p class="note">Variabili: 8 di pioggia, 5 di VWC0 antecedente, suzione NV 15 e 30 cm. Ogni combinazione è valutata separatamente; scegliere la migliore sugli stessi dati è ottimistico (confronta con le strategie "SEL" della tabella sopra).</p>
+    <div class="ctl">Tipo <select id="tri-t"><option value="">tutti</option></select> Cerca <input id="tri-q" placeholder="es. NV_VWC0_15" size="14"></div>
+    <div class="grid g2"><div class="tw" id="tri-tab" style="max-height:480px"></div><div id="tri-g" class="plot"></div></div>
   </div>
 </section>
 
@@ -170,6 +175,7 @@ function table(el,rows,cols,opts={}){
   const draw=()=>{let r=rows.slice();if(sortK)r.sort((a,b)=>{const x=a[sortK],y=b[sortK];if(x==null)return 1;if(y==null)return -1;return (x>y?1:x<y?-1:0)*(asc?1:-1)});
     el.innerHTML="<table><thead><tr>"+cols.map(c=>`<th data-k="${c[0]}">${c[1]}</th>`).join("")+"</tr></thead><tbody>"+
     r.map(x=>`<tr class="${opts.hl&&opts.hl(x)?"ls":""}">`+cols.map(c=>`<td>${fmt(x[c[0]],c[2]??3)}</td>`).join("")+"</tr>").join("")+"</tbody></table>";
+    if(opts.onRow)el.querySelectorAll("tbody tr").forEach((tr,i)=>{tr.style.cursor="pointer";tr.onclick=()=>opts.onRow(r[i])});
     el.querySelectorAll("th").forEach(th=>th.onclick=()=>{const k=th.dataset.k;asc=sortK===k?!asc:true;sortK=k;draw()})};
   draw();
 }
@@ -294,8 +300,7 @@ function mv(){
   const fam=$("#mv-fam").value,wt=$("#mv-wt").value,q=$("#mv-q").value.trim().toLowerCase(),sc=$("#mv-sc").value;
   let rows=D.multivar.summary[fam].filter(r=>(!$("#mv-cmp").checked||r.complete_all_gauges)&&(wt==="all"||(wt==="ant"?!/dVWC/.test(r.combo)&&/VWC0/.test(r.combo):/dVWC/.test(r.combo)))&&(!q||r.combo.toLowerCase().includes(q)||lab(r.combo).toLowerCase().includes(q)));
   rows=rows.map(r=>({...r,label:lab(r.combo)})).sort((a,b)=>b["AUC_"+sc+"_mean"]-a["AUC_"+sc+"_mean"]);
-  table($("#mv-tab"),rows,[["label","combinazione"],["AUC_PS_mean","AUC PS medio"],["AUC_PS_min","PS min"],["AUC_DM_mean","AUC D_M medio"],["AUC_DM_min","D_M min"],["LS_above_thr","frane > soglia χ²",0],["n_ls","n frane",0],["FPR_thr","FPR soglia"]]);
-  $("#mv-tab").querySelectorAll("tbody tr").forEach((tr,i)=>{tr.style.cursor="pointer";tr.onclick=()=>{mvSel=rows[i].combo;mvGauge(fam)}});
+  table($("#mv-tab"),rows,[["label","combinazione"],["AUC_PS_mean","AUC PS medio"],["AUC_PS_min","PS min"],["AUC_DM_mean","AUC D_M medio"],["AUC_DM_min","D_M min"],["LS_above_thr","frane > soglia χ²",0],["n_ls","n frane",0],["FPR_thr","FPR soglia"]],{onRow:x=>{mvSel=x.combo;mvGauge(fam)}});
   if(!mvSel||!rows.find(r=>r.combo===mvSel))mvSel=rows.length?rows[0].combo:null;
   mvGauge(fam);
 }
@@ -312,9 +317,19 @@ function mvGauge(fam){
 let I=null;
 function indInit(){fetch("indicator.json").then(r=>r.json()).then(d=>{I=d;
   fill($("#ind-s"),I.pooled.map(r=>r.strategy),I.best_fixed);fill($("#ind-g"),D.gauges,D.reference_gauge);
-  table($("#ind-pool"),I.pooled,[["strategy","strategia"],["kind","tipo"],["TP","TP",0],["FN","FN",0],["FP","FP",0],["TN","TN",0],["POD","POD"],["POFD","POFD"],["FAR","FAR"],["TSS","TSS"],["CSI","CSI"],["AUC_cv_mean","AUC CV medio"],["TSS_min","TSS min pluv."],["TSS_insample_mean","TSS in-sample"]]);
-  $("#ind-pool").querySelectorAll("tbody tr").forEach(tr=>{tr.style.cursor="pointer";tr.onclick=()=>{$("#ind-s").value=tr.cells[0].textContent;ind()}});
-  $("#ind-s").onchange=ind;$("#ind-g").onchange=ind;ind()})}
+  table($("#ind-pool"),I.pooled,[["strategy","strategia"],["kind","tipo"],["TP","TP",0],["FN","FN",0],["FP","FP",0],["TN","TN",0],["POD","POD"],["POFD","POFD"],["FAR","FAR"],["TSS","TSS"],["CSI","CSI"],["AUC_cv_mean","AUC CV medio"],["TSS_min","TSS min pluv."],["TSS_insample_mean","TSS in-sample"]],{onRow:x=>{$("#ind-s").value=x.strategy;ind()}});
+  $("#ind-s").onchange=ind;$("#ind-g").onchange=ind;ind();
+  if(I.triples){fill($("#tri-t"),[["","tutti"],...[...new Set(I.triples.map(r=>r.type))].map(t=>[t,t])]);$("#tri-t").onchange=tri;$("#tri-q").oninput=tri;tri()}})}
+function tri(){
+  const t=$("#tri-t").value,q=$("#tri-q").value.trim().toLowerCase();
+  const rows=I.triples.filter(r=>(!t||r.type===t)&&(!q||r.combo.toLowerCase().includes(q))).map(r=>({...r,label:lab(r.combo)}));
+  const show=c=>{const G=I.triples_by_gauge.filter(r=>r.combo===c);
+    Plotly.react("tri-g",[{x:G.map(r=>r.gauge),y:G.map(r=>r.TSS),type:"bar",name:"TSS",marker:{color:"#3f51b5"},text:G.map(r=>`TP ${r.TP} FN ${r.FN} FP ${r.FP}`),textposition:"outside"}],
+      lay({title:{text:lab(c),font:{size:12}},yaxis:{range:[-.1,1.1],title:"TSS (CV)",gridcolor:css("--line")}}),cfg)};
+  table($("#tri-tab"),rows,[["label","combinazione"],["type","tipo"],["TP","TP",0],["FN","FN",0],["FP","FP",0],["POD","POD"],["POFD","POFD"],["TSS","TSS"],["TSS_min","TSS min"],["AUC_cv_mean","AUC CV"]],{onRow:x=>show(x.combo)});
+
+  if(rows.length)show(rows[0].combo);
+}
 function ind(){
   const st=$("#ind-s").value,g=$("#ind-g").value,B=I.by_gauge.filter(r=>r.strategy===st);
   Plotly.react("ind-bars",["POD","POFD","FAR","TSS"].map((m,k)=>({x:B.map(r=>r.gauge),y:B.map(r=>r[m]),type:"bar",name:m,marker:{color:["#2e7d32","#e8834c","#c62828","#3f51b5"][k]}})),
@@ -338,8 +353,12 @@ fetch("data.json").then(r=>r.json()).then(d=>{D=d;
   ["#ts-g","#ev-g","#ls-g"].forEach(s=>fill($(s),D.gauges,D.reference_gauge));
   const dsel=()=>fill($("#ev-d"),D.sites[$("#ev-s").value].map(String),"60");dsel();
   fill($("#ls-f"),Object.keys(D.features).map(f=>[f,D.features[f][0]]),"NV_VWC0_60");
-  $("#gal").innerHTML=["Fig02_timeseries_rain_VWC_suction","Fig02b_IETD_event_identification_example","Fig03_hydrological_index_extraction","Fig04_ED_space_event_classes","Fig05_infiltration_velocity_V_vs_NV","Fig06_landslide_timeline","Fig06b_rainfall_around_landslides","Fig07_boxplots_Salerno_GC","Fig07_boxplots_Albori","Fig07_boxplots_Cetara","Fig07_boxplots_Cetara_SC","Fig07_boxplots_Dragonea","Fig08_ROC_curves","Fig09_E_vs_VWC0_60_KDE","Fig10_antecedent_VWC_profiles","Fig11_discriminant_synthesis","Fig12_mahalanobis_and_accumulation_windows","Fig13_multivar_2var_heatmaps","Fig14_multivar_best_by_family","Fig15_multivar_scatter_examples","Fig16_indicator_performance","Fig17_indicator_timeline_best","Fig18_indicator_construction"]
-    .map(f=>`<a href="figures/${f}.png" target="_blank"><img loading="lazy" src="figures/${f}.png" alt="${f}">${f}</a>`).join("");
+  fetch("figures.json").then(r=>r.json()).then(F=>{
+    const card=f=>`<a href="figures/${f.file}" target="_blank"><img loading="lazy" src="figures/${f.file}" alt="${f.caption}">${f.caption}</a>`;
+    $("#gal").innerHTML=F.map(card).join("");
+    [...new Set(F.map(f=>f.tab).filter(Boolean))].forEach(t=>{const sec=$("#"+t);if(!sec)return;
+      const c=document.createElement("div");c.className="card";c.style.marginTop="12px";
+      c.innerHTML=`<h3>Figure</h3><div class="gal">${F.filter(f=>f.tab===t).map(card).join("")}</div>`;sec.appendChild(c)})});
   const T=D.tables;
   table($("#t07"),T.T07_infiltration_V_vs_NV,[["pair","coppia"],["metric","metrica"],["n_V","n V",0],["n_NV","n NV",0],["median_V","mediana V"],["median_NV","mediana NV"],["RB_V_vs_NV","RB"],["MWU_p","p"]]);
   table($("#t08"),T.T08_V_vs_NV_paired_by_event,[["variable","var."],["depth_V","z V",0],["depth_NV","z NV",0],["n_events","n",0],["median_V","mediana V"],["median_NV","mediana NV"],["frac_events_V_lt_NV","frazione V&lt;NV"],["wilcoxon_p","p"]]);

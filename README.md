@@ -90,6 +90,8 @@ Pioggia gen 2025 – set 2026: 1694 mm (Salerno G.C.) – 2247 mm (Dragonea); 20
   | D + A7d + V ΔVWC 60 (risposta durante l'evento) | 0.78 | 0.03 | 0.30 | 0.75 | 0.99 |
   | selezione automatica nel fold, pioggia + VWC0 | 0.61 | 0.09 | 0.59 | 0.53 | 0.90 |
 
+  **Indicatori con più variabili e tutte le combinazioni a 3 variabili** (T19–T23, Fig19–20, tab *Indicatore*): oltre alle combinazioni sopra sono stati testati indicatori a 4, 5, 8, 11 e 15 variabili, le strategie con scelta nel fold a 3 e 4 variabili, e **tutte le 455 combinazioni di 3 variabili** tra 8 di pioggia, 5 VWC0 e suzione NV 15/30 cm. Migliori (TSS aggregato in CV): E + P6h + A7d + NV VWC0 15 (4 var) **0.82** (POD 0.89, POFD 0.07); tra le terne P6h + NV VWC0 15 + NV s0 30 0.82 e P3h + A7d + NV s0 30 0.81 (POFD 0.03). Mediana delle 455 terne 0.57; per tipo, le terne "2 pioggia + suzione" hanno mediana 0.66, "solo pioggia" 0.64, quelle con 2–3 variabili di VWC0 0.32–0.44. Oltre 4–5 variabili il TSS scende (8 var 0.67, 15 var 0.59): l'indicatore a media di percentili diluisce le variabili informative. Le migliori combinazioni sono selezionate sugli stessi dati: la stima onesta resta quella delle strategie SEL (0.40–0.53).
+
   Schema e esempio numerico: `Fig18_indicator_construction` (`make_indicator_figure.py`).
 
   Aggiungere il VWC antecedente superficiale (NV 15 cm) alla cumulata dimezza i falsi allarmi (29 → 17) senza perdere frane. La selezione automatica della combinazione dentro ogni fold rende meno delle combinazioni fisse: con 3–4 frane per pluviometro scegliere tra molte combinazioni è instabile. Le combinazioni fisse sono state scelte dopo aver visto gli stessi dati, quindi la loro performance è ottimistica e va confermata su eventi futuri.
@@ -118,9 +120,11 @@ Nota rispetto all'indice: il punto 5 dell'indice ipotizza che il VWC a 60 cm abb
 | Fig13_multivar_2var_heatmaps | 4.4 | AUC medio di tutte le coppie pioggia × acqua (D_M e PS) |
 | Fig14_multivar_best_by_family | 4.4 | Migliore combinazione per famiglia (1, 2, 3 variabili; VWC0 vs ΔVWC) |
 | Fig18_indicator_construction | 4.4 | Come è costruito l'indicatore (esempio Salerno G.C., E + VWC0 NV 15 cm, L1) |
+| Fig19_indicator_TSS_vs_nvars | 4.4 | TSS in CV vs numero di variabili dell'indicatore |
+| Fig20_indicator_all_3var | 4.4 | Tutte le 455 combinazioni a 3 variabili: per tipo e top 20 |
 | Fig15_multivar_scatter_examples | 4.4 | E vs VWC0 (NV 15, V 60 cm) con ellisse di Mahalanobis 95% |
 
 Fig.1 (mappa) è già nella bozza del Cap. 2 e non è rigenerata.
 
 ## Tabelle (`outputs/tables`)
-T00 buchi pioggia/suolo · T01 sintesi dati · T02 eventi per pluviometro · T03 indici idrologici di tutti gli eventi · T04 sintesi eventi · T05 classi (Salerno G.C.) · T06 velocità di infiltrazione · T07 V vs NV velocità · T08 V vs NV appaiato per evento · T09 eventi con frana · T10 medie feature frana/no frana · T11 metriche discriminanti complete (AUC, AUC*, RB, U, p, p_adj Holm, percentile mediano, soglia Youden, recall, FPR, TP, FP) · T12 sintesi metriche (variabili dell'indice) · T13 classe di severità degli eventi con frana · T14 Mahalanobis · T15 AUC* per finestra di accumulo · T16 combinazioni multivariate per pluviometro (1var, 2var_R+W, 3var_R+R+W, 3var_R+W+W) · T17 sintesi sui 5 pluviometri · T18 migliori combinazioni per famiglia · `run_provenance.json` versioni e parametri.
+T00 buchi pioggia/suolo · T01 sintesi dati · T02 eventi per pluviometro · T03 indici idrologici di tutti gli eventi · T04 sintesi eventi · T05 classi (Salerno G.C.) · T06 velocità di infiltrazione · T07 V vs NV velocità · T08 V vs NV appaiato per evento · T09 eventi con frana · T10 medie feature frana/no frana · T11 metriche discriminanti complete (AUC, AUC*, RB, U, p, p_adj Holm, percentile mediano, soglia Youden, recall, FPR, TP, FP) · T12 sintesi metriche (variabili dell'indice) · T13 classe di severità degli eventi con frana · T14 Mahalanobis · T15 AUC* per finestra di accumulo · T16 combinazioni multivariate per pluviometro (1var, 2var_R+W, 3var_R+R+W, 3var_R+W+W) · T17 sintesi sui 5 pluviometri · T18 migliori combinazioni per famiglia · T19–T21 indicatore (per pluviometro, aggregato, combinazioni scelte nei fold) · T22–T23 tutte le combinazioni a 3 variabili · `run_provenance.json` versioni e parametri.

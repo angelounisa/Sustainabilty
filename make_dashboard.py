@@ -77,6 +77,40 @@ out = dict(
 json.dump(out, open(D / "data.json", "w"), separators=(",", ":"), allow_nan=False)
 print("data.json", round((D / "data.json").stat().st_size / 1e6, 2), "MB")
 
+CAPTIONS = {
+    "Fig02_timeseries_rain_VWC_suction": ("s-over", "Serie storiche: pioggia, VWC e suzione nei siti V e NV, con le frane"),
+    "Fig03_hydrological_index_extraction": ("s-over", "Estrazione degli indici idrologici sull'evento di L1"),
+    "Fig02b_IETD_event_identification_example": ("s-ev", "Identificazione degli eventi (IETD 24 h, E ≥ 10 mm)"),
+    "Fig04_ED_space_event_classes": ("s-ev", "Eventi nello spazio E–D per classe di risposta, sito e profondità"),
+    "Fig05_infiltration_velocity_V_vs_NV": ("s-inf", "Velocità di infiltrazione (0–15, 15–30/35, 30/35–60, 15–60 cm) e ΔVWC V vs NV"),
+    "Fig06_landslide_timeline": ("s-ls", "Timeline delle frane e degli eventi per pluviometro"),
+    "Fig06b_rainfall_around_landslides": ("s-ls", "Pioggia cumulata intorno a ciascuna frana"),
+    "Fig07_boxplots_Salerno_GC": ("s-ls", "Boxplot frana vs non frana — Salerno G.C."),
+    "Fig07_boxplots_Albori": ("s-ls", "Boxplot frana vs non frana — Albori"),
+    "Fig07_boxplots_Cetara": ("s-ls", "Boxplot frana vs non frana — Cetara"),
+    "Fig07_boxplots_Cetara_SC": ("s-ls", "Boxplot frana vs non frana — Cetara S.C."),
+    "Fig07_boxplots_Dragonea": ("s-ls", "Boxplot frana vs non frana — Dragonea"),
+    "Fig08_ROC_curves": ("s-ls", "Curve ROC dei singoli predittori"),
+    "Fig09_E_vs_VWC0_60_KDE": ("s-ls", "Spazio E – VWC0 60 cm con densità degli eventi senza frana"),
+    "Fig10_antecedent_VWC_profiles": ("s-ls", "Profili di VWC antecedente: frane vs eventi normali"),
+    "Fig11_discriminant_synthesis": ("s-ls", "Sintesi del potere discriminante (AUC*, rank-biserial)"),
+    "Fig12_mahalanobis_and_accumulation_windows": ("s-ls", "Mahalanobis e AUC per finestra di accumulo"),
+    "Fig13_multivar_2var_heatmaps": ("s-mv", "Tutte le coppie pioggia × contenuto d'acqua"),
+    "Fig14_multivar_best_by_family": ("s-mv", "Migliore combinazione per famiglia (1, 2, 3 variabili)"),
+    "Fig15_multivar_scatter_examples": ("s-mv", "Esempi E vs VWC0 con ellisse di Mahalanobis"),
+    "Fig18_indicator_construction": ("s-ind", "Come è costruito l'indicatore (esempio numerico)"),
+    "Fig16_indicator_performance": ("s-ind", "Performance in validazione di tutti gli indicatori, per pluviometro"),
+    "Fig19_indicator_TSS_vs_nvars": ("s-ind", "TSS in funzione del numero di variabili"),
+    "Fig20_indicator_all_3var": ("s-ind", "Tutti gli indicatori a 3 variabili"),
+    "Fig17_indicator_timeline_best": ("s-ind", "Valore dell'indicatore migliore evento per evento"),
+}
+present = {f.stem for f in P["figures"].glob("*.png")}
+missing = set(CAPTIONS) - present
+assert not missing, f"figures listed but not generated: {missing}"
+json.dump([dict(file=f"{k}.png", tab=v[0], caption=v[1]) for k, v in CAPTIONS.items()] +
+          [dict(file=f"{k}.png", tab=None, caption=k) for k in sorted(present - set(CAPTIONS))],
+          open(D / "figures.json", "w"), ensure_ascii=False, indent=0)
+
 for f in sorted(P["figures"].glob("*.png")):
     shutil.copy(f, D / "figures" / f.name)
 print("figures copied:", len(list((D / "figures").glob("*.png"))))

@@ -1,56 +1,123 @@
 gauge,strategy,combo,n_folds
+Albori,SEL rain + VWC0 + NV s0 (3 var),Imax_mmh + NV_VWC0_15 + NV_s0_15,42
+Albori,SEL 1 rain + 2 VWC0 (3 var),Imax_mmh + NV_VWC0_15 + NV_VWC0_30,41
 Cetara S.C.,SEL rain (1 var),E_mm,41
 Dragonea,SEL rain (1 var),A7d_mm,41
 Dragonea,SEL 2 rain + VWC0 (3 var),D_h + A7d_mm + NV_VWC0_15,41
 Cetara,SEL rain (1 var),E_mm,39
+Cetara S.C.,SEL 1 rain + 2 VWC0 (3 var),Imax_mmh + NV_VWC0_15 + NV_VWC0_30,38
 Salerno G.C.,SEL rain (1 var),E_mm,38
 Dragonea,SEL rain + VWC0 (2 var),P3h_mm + NV_VWC0_15,37
 Salerno G.C.,SEL rain + VWC0 (2 var),E_mm + NV_VWC0_15,37
 Albori,SEL rain (1 var),E_mm,35
+Cetara,SEL 1 rain + 2 VWC0 (3 var),Imax_mmh + NV_VWC0_15 + NV_VWC0_30,33
+Cetara,SEL 2 rain + 2 VWC0 (4 var),D_h + Imax_mmh + NV_VWC0_15 + NV_VWC0_30,33
 Cetara S.C.,SEL 2 rain + VWC0 (3 var),E_mm + P3h_mm + V_VWC0_35,32
 Cetara,SEL 2 rain + VWC0 (3 var),E_mm + Imax_mmh + NV_VWC0_15,31
+Dragonea,SEL 1 rain + 2 VWC0 (3 var),Imax_mmh + NV_VWC0_15 + NV_VWC0_30,31
+Dragonea,SEL rain + VWC0 + NV s0 (3 var),Imax_mmh + NV_VWC0_15 + NV_s0_15,30
+Albori,SEL 2 rain + 2 VWC0 (4 var),Imax_mmh + P3h_mm + NV_VWC0_30 + V_VWC0_35,28
+Cetara,SEL rain + VWC0 + NV s0 (3 var),Imax_mmh + NV_VWC0_15 + NV_s0_15,28
 Salerno G.C.,SEL 2 rain + VWC0 (3 var),D_h + P6h_mm + NV_VWC0_15,28
 Albori,SEL 2 rain + VWC0 (3 var),Imax_mmh + A7d_mm + NV_VWC0_30,27
+Dragonea,SEL 2 rain + 2 VWC0 (4 var),D_h + P3h_mm + NV_VWC0_15 + NV_VWC0_30,27
+Salerno G.C.,SEL 1 rain + 2 VWC0 (3 var),P6h_mm + NV_VWC0_15 + NV_VWC0_30,27
 Albori,SEL rain + VWC0 (2 var),Imax_mmh + NV_VWC0_30,25
+Salerno G.C.,SEL 2 rain + 2 VWC0 (4 var),D_h + P3h_mm + NV_VWC0_15 + NV_VWC0_30,25
 Cetara,SEL rain + VWC0 (2 var),Imax_mmh + NV_VWC0_15,23
+Cetara S.C.,SEL 2 rain + 2 VWC0 (4 var),E_mm + Imax_mmh + NV_VWC0_15 + V_VWC0_35,23
+Salerno G.C.,SEL rain + VWC0 + NV s0 (3 var),E_mm + NV_VWC0_15 + NV_s0_15,23
 Albori,SEL rain + VWC0 (2 var),Imax_mmh + NV_VWC0_15,16
+Cetara S.C.,SEL rain + VWC0 + NV s0 (3 var),Imax_mmh + V_VWC0_35 + NV_s0_15,16
 Cetara S.C.,SEL rain + VWC0 (2 var),P3h_mm + NV_VWC0_30,14
 Cetara S.C.,SEL rain + VWC0 (2 var),E_mm + NV_VWC0_15,11
 Cetara S.C.,SEL rain + VWC0 (2 var),P3h_mm + NV_VWC0_15,11
+Cetara S.C.,SEL rain + VWC0 + NV s0 (3 var),P3h_mm + V_VWC0_35 + NV_s0_15,11
+Dragonea,SEL 1 rain + 2 VWC0 (3 var),D_h + NV_VWC0_15 + NV_VWC0_30,11
+Cetara,SEL rain + VWC0 + NV s0 (3 var),Imax_mmh + NV_VWC0_30 + NV_s0_15,10
+Dragonea,SEL 2 rain + 2 VWC0 (4 var),D_h + Imax_mmh + NV_VWC0_15 + NV_VWC0_30,10
+Cetara S.C.,SEL rain + VWC0 + NV s0 (3 var),P3h_mm + NV_VWC0_15 + NV_s0_15,9
 Cetara,SEL rain + VWC0 (2 var),E_mm + NV_VWC0_15,8
+Cetara S.C.,SEL 2 rain + 2 VWC0 (4 var),E_mm + Imax_mmh + NV_VWC0_15 + NV_VWC0_30,8
+Salerno G.C.,SEL 1 rain + 2 VWC0 (3 var),E_mm + NV_VWC0_15 + NV_VWC0_30,8
+Salerno G.C.,SEL rain + VWC0 + NV s0 (3 var),Imax_mmh + NV_VWC0_15 + NV_s0_30,8
 Albori,SEL 2 rain + VWC0 (3 var),D_h + Imax_mmh + NV_VWC0_15,7
 Cetara,SEL rain + VWC0 (2 var),Imax_mmh + NV_VWC0_30,7
 Albori,SEL rain (1 var),A7d_mm,6
 Albori,SEL 2 rain + VWC0 (3 var),Imax_mmh + A7d_mm + NV_VWC0_15,5
+Albori,SEL 2 rain + 2 VWC0 (4 var),Imax_mmh + P3h_mm + NV_VWC0_30 + NV_VWC0_60,5
+Albori,SEL 2 rain + 2 VWC0 (4 var),E_mm + Imax_mmh + NV_VWC0_15 + NV_VWC0_30,5
+Cetara,SEL 2 rain + 2 VWC0 (4 var),E_mm + Imax_mmh + NV_VWC0_15 + NV_VWC0_30,5
+Dragonea,SEL rain + VWC0 + NV s0 (3 var),P3h_mm + NV_VWC0_15 + NV_s0_15,5
 Salerno G.C.,SEL 2 rain + VWC0 (3 var),E_mm + D_h + NV_VWC0_15,5
+Salerno G.C.,SEL 2 rain + 2 VWC0 (4 var),D_h + P24h_mm + NV_VWC0_15 + NV_VWC0_30,5
 Cetara S.C.,SEL 2 rain + VWC0 (3 var),E_mm + Imax_mmh + NV_VWC0_30,4
+Cetara S.C.,SEL 2 rain + 2 VWC0 (4 var),E_mm + Imax_mmh + NV_VWC0_30 + V_VWC0_35,4
+Dragonea,SEL rain + VWC0 + NV s0 (3 var),P3h_mm + NV_VWC0_30 + NV_s0_15,4
 Salerno G.C.,SEL 2 rain + VWC0 (3 var),D_h + P24h_mm + NV_VWC0_15,4
+Salerno G.C.,SEL 2 rain + 2 VWC0 (4 var),D_h + P6h_mm + NV_VWC0_15 + NV_VWC0_30,4
+Albori,SEL 2 rain + 2 VWC0 (4 var),D_h + Imax_mmh + NV_VWC0_15 + NV_VWC0_30,3
 Cetara,SEL 2 rain + VWC0 (3 var),E_mm + P3h_mm + NV_VWC0_15,3
 Cetara S.C.,SEL rain + VWC0 (2 var),Imax_mmh + V_VWC0_35,3
+Cetara S.C.,SEL 2 rain + 2 VWC0 (4 var),D_h + P3h_mm + NV_VWC0_15 + NV_VWC0_30,3
 Dragonea,SEL rain + VWC0 (2 var),P3h_mm + NV_VWC0_30,3
+Salerno G.C.,SEL rain + VWC0 + NV s0 (3 var),E_mm + NV_VWC0_15 + NV_s0_30,3
 Cetara,SEL 2 rain + VWC0 (3 var),E_mm + D_h + NV_VWC0_15,2
 Cetara,SEL 2 rain + VWC0 (3 var),E_mm + Imax_mmh + NV_VWC0_30,2
+Cetara,SEL 1 rain + 2 VWC0 (3 var),Imax_mmh + NV_VWC0_30 + V_VWC0_35,2
+Cetara,SEL 1 rain + 2 VWC0 (3 var),E_mm + NV_VWC0_15 + NV_VWC0_30,2
+Cetara,SEL 1 rain + 2 VWC0 (3 var),Imax_mmh + NV_VWC0_15 + V_VWC0_35,2
 Cetara S.C.,SEL 2 rain + VWC0 (3 var),E_mm + Imax_mmh + V_VWC0_35,2
+Cetara S.C.,SEL rain + VWC0 + NV s0 (3 var),E_mm + V_VWC0_35 + NV_s0_15,2
+Cetara S.C.,SEL rain + VWC0 + NV s0 (3 var),Imax_mmh + NV_VWC0_15 + NV_s0_15,2
+Cetara S.C.,SEL 2 rain + 2 VWC0 (4 var),P3h_mm + P6h_mm + NV_VWC0_30 + V_VWC0_35,2
 Dragonea,SEL rain + VWC0 (2 var),D_h + NV_VWC0_15,2
+Dragonea,SEL rain + VWC0 + NV s0 (3 var),D_h + NV_VWC0_15 + NV_s0_30,2
+Dragonea,SEL 2 rain + 2 VWC0 (4 var),E_mm + D_h + NV_VWC0_15 + NV_VWC0_30,2
+Dragonea,SEL 2 rain + 2 VWC0 (4 var),Imax_mmh + A7d_mm + NV_VWC0_15 + NV_VWC0_30,2
+Salerno G.C.,SEL 1 rain + 2 VWC0 (3 var),D_h + NV_VWC0_15 + NV_VWC0_30,2
+Salerno G.C.,SEL rain + VWC0 + NV s0 (3 var),D_h + NV_VWC0_15 + NV_s0_30,2
+Salerno G.C.,SEL 2 rain + 2 VWC0 (4 var),D_h + Imax_mmh + NV_VWC0_15 + NV_VWC0_30,2
+Salerno G.C.,SEL 2 rain + 2 VWC0 (4 var),E_mm + P3h_mm + NV_VWC0_15 + NV_VWC0_30,2
 Albori,SEL rain (1 var),P6h_mm,1
 Albori,SEL rain + VWC0 (2 var),E_mm + NV_VWC0_15,1
 Albori,SEL 2 rain + VWC0 (3 var),E_mm + A30d_mm + V_VWC0_35,1
 Albori,SEL 2 rain + VWC0 (3 var),E_mm + Imax_mmh + NV_VWC0_15,1
 Albori,SEL 2 rain + VWC0 (3 var),E_mm + Imax_mmh + NV_VWC0_30,1
+Albori,SEL 1 rain + 2 VWC0 (3 var),Imax_mmh + NV_VWC0_15 + V_VWC0_60,1
+Albori,SEL 2 rain + 2 VWC0 (4 var),Imax_mmh + A7d_mm + V_VWC0_35 + V_VWC0_60,1
 Cetara,SEL rain (1 var),P6h_mm,1
 Cetara,SEL rain + VWC0 (2 var),D_h + V_VWC0_60,1
 Cetara,SEL rain + VWC0 (2 var),E_mm + NV_VWC0_30,1
 Cetara,SEL 2 rain + VWC0 (3 var),D_h + A7d_mm + NV_VWC0_30,1
 Cetara,SEL 2 rain + VWC0 (3 var),Imax_mmh + A7d_mm + NV_VWC0_30,1
+Cetara,SEL 1 rain + 2 VWC0 (3 var),D_h + NV_VWC0_30 + V_VWC0_60,1
+Cetara,SEL rain + VWC0 + NV s0 (3 var),D_h + V_VWC0_60 + NV_s0_15,1
+Cetara,SEL rain + VWC0 + NV s0 (3 var),Imax_mmh + NV_VWC0_15 + NV_s0_30,1
+Cetara,SEL 2 rain + 2 VWC0 (4 var),D_h + A7d_mm + NV_VWC0_30 + V_VWC0_60,1
+Cetara,SEL 2 rain + 2 VWC0 (4 var),E_mm + Imax_mmh + NV_VWC0_30 + NV_VWC0_60,1
 Cetara S.C.,SEL rain + VWC0 (2 var),D_h + V_VWC0_35,1
 Cetara S.C.,SEL rain + VWC0 (2 var),Imax_mmh + NV_VWC0_30,1
 Cetara S.C.,SEL 2 rain + VWC0 (3 var),D_h + P6h_mm + V_VWC0_60,1
 Cetara S.C.,SEL 2 rain + VWC0 (3 var),D_h + Imax_mmh + NV_VWC0_30,1
 Cetara S.C.,SEL 2 rain + VWC0 (3 var),P3h_mm + P24h_mm + V_VWC0_35,1
+Cetara S.C.,SEL 1 rain + 2 VWC0 (3 var),D_h + V_VWC0_35 + V_VWC0_60,1
+Cetara S.C.,SEL 1 rain + 2 VWC0 (3 var),E_mm + NV_VWC0_15 + NV_VWC0_30,1
+Cetara S.C.,SEL 1 rain + 2 VWC0 (3 var),Imax_mmh + NV_VWC0_15 + V_VWC0_35,1
+Cetara S.C.,SEL rain + VWC0 + NV s0 (3 var),P6h_mm + V_VWC0_35 + NV_s0_15,1
+Cetara S.C.,SEL 2 rain + 2 VWC0 (4 var),E_mm + Imax_mmh + V_VWC0_35 + V_VWC0_60,1
 Dragonea,SEL rain (1 var),E_mm,1
 Dragonea,SEL 2 rain + VWC0 (3 var),E_mm + D_h + NV_VWC0_15,1
+Dragonea,SEL rain + VWC0 + NV s0 (3 var),D_h + NV_VWC0_15 + NV_s0_15,1
+Dragonea,SEL 2 rain + 2 VWC0 (4 var),D_h + P3h_mm + NV_VWC0_15 + V_VWC0_35,1
 Salerno G.C.,SEL rain (1 var),D_h,1
 Salerno G.C.,SEL rain + VWC0 (2 var),D_h + NV_VWC0_30,1
 Salerno G.C.,SEL rain + VWC0 (2 var),E_mm + NV_VWC0_30,1
 Salerno G.C.,SEL 2 rain + VWC0 (3 var),D_h + Imax_mmh + NV_VWC0_15,1
 Salerno G.C.,SEL 2 rain + VWC0 (3 var),E_mm + P6h_mm + NV_VWC0_15,1
+Salerno G.C.,SEL 1 rain + 2 VWC0 (3 var),D_h + NV_VWC0_15 + NV_VWC0_60,1
+Salerno G.C.,SEL 1 rain + 2 VWC0 (3 var),Imax_mmh + NV_VWC0_15 + NV_VWC0_30,1
+Salerno G.C.,SEL rain + VWC0 + NV s0 (3 var),D_h + NV_VWC0_30 + NV_s0_30,1
+Salerno G.C.,SEL rain + VWC0 + NV s0 (3 var),P6h_mm + NV_VWC0_15 + NV_s0_30,1
+Salerno G.C.,SEL rain + VWC0 + NV s0 (3 var),E_mm + NV_VWC0_30 + NV_s0_15,1
+Salerno G.C.,SEL 2 rain + 2 VWC0 (4 var),E_mm + D_h + NV_VWC0_15 + NV_VWC0_30,1
