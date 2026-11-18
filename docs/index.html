@@ -124,6 +124,20 @@ p{margin:6px 0}
   </div>
 </section>
 
+<section id="s-ind">
+  <div class="card">
+    <h3>Indicatore frana / no frana per pluviometro</h3>
+    <p class="note">I = media dei percentili delle variabili rispetto agli eventi senza frana (verso critico: più pioggia, suolo più umido, suzione più bassa), scala 0–100. Allarme se I ≥ soglia di Youden. Valutazione <b>leave-one-event-out</b>: per ogni evento riferimento e soglia sono calcolati senza quell'evento. Le strategie "SEL" scelgono anche la combinazione dentro ogni fold. POD = frane rilevate; POFD = falsi allarmi / eventi senza frana; FAR = falsi allarmi / allarmi; TSS = POD − POFD. Le combinazioni fisse sono state scelte dopo l'analisi multivariata sugli stessi dati: le loro prestazioni sono ottimistiche; le "SEL" danno la stima onesta del costo di scegliere.</p>
+    <div class="tw" id="ind-pool"></div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <div class="ctl">Strategia <select id="ind-s"></select> Pluviometro <select id="ind-g"></select></div>
+    <div class="grid g2"><div id="ind-bars" class="plot"></div><div id="ind-cm" class="plot"></div></div>
+    <div id="ind-time" class="plot" style="min-height:300px"></div>
+    <div id="ind-note" class="note"></div>
+  </div>
+</section>
+
 <section id="s-fig"><div class="gal" id="gal"></div></section>
 
 <section id="s-met"><div class="card">
@@ -141,7 +155,7 @@ p{margin:6px 0}
 const $=s=>document.querySelector(s);
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
 let D;
-const TABS=[["s-over","Panoramica"],["s-ev","Eventi"],["s-inf","Infiltrazione V/NV"],["s-ls","Frane vs non frane"],["s-mv","Multivariata"],["s-fig","Figure"],["s-met","Metodi"]];
+const TABS=[["s-over","Panoramica"],["s-ev","Eventi"],["s-inf","Infiltrazione V/NV"],["s-ls","Frane vs non frane"],["s-mv","Multivariata"],["s-ind","Indicatore"],["s-fig","Figure"],["s-met","Metodi"]];
 const CLS={irrelevant:"#9e9e9e",relevant:"#f2c14e",extreme:"#d1495b",null:"#ffffff"};
 const DC={15:"#4c9be8",30:"#e8834c",35:"#e8834c",60:"#7e57c2"};
 const cfg={responsive:true,displaylogo:false};
@@ -292,6 +306,29 @@ function mvGauge(fam){
     lay({title:{text:lab(mvSel),font:{size:12}},barmode:"group",yaxis:{range:[.4,1.02],title:"AUC",gridcolor:css("--line")}}),cfg);
   $("#mv-sel").innerHTML=G.map(r=>`${r.gauge}: frane con dati ${r.n_ls}, sopra soglia χ² ${r.LS_above_thr??"–"} · falsi positivi ${r.FP_above_thr??"–"}/${r.n_nols} · recall a FPR 10% (PS) ${fmt(r.recall_at_FPR10,2)}`).join("<br>");
 }
+
+// ---------- indicator
+let I=null;
+function indInit(){fetch("indicator.json").then(r=>r.json()).then(d=>{I=d;
+  fill($("#ind-s"),I.pooled.map(r=>r.strategy),I.best_fixed);fill($("#ind-g"),D.gauges,D.reference_gauge);
+  table($("#ind-pool"),I.pooled,[["strategy","strategia"],["kind","tipo"],["TP","TP",0],["FN","FN",0],["FP","FP",0],["TN","TN",0],["POD","POD"],["POFD","POFD"],["FAR","FAR"],["TSS","TSS"],["CSI","CSI"],["AUC_cv_mean","AUC CV medio"],["TSS_min","TSS min pluv."],["TSS_insample_mean","TSS in-sample"]]);
+  $("#ind-pool").querySelectorAll("tbody tr").forEach(tr=>{tr.style.cursor="pointer";tr.onclick=()=>{$("#ind-s").value=tr.cells[0].textContent;ind()}});
+  $("#ind-s").onchange=ind;$("#ind-g").onchange=ind;ind()})}
+function ind(){
+  const st=$("#ind-s").value,g=$("#ind-g").value,B=I.by_gauge.filter(r=>r.strategy===st);
+  Plotly.react("ind-bars",["POD","POFD","FAR","TSS"].map((m,k)=>({x:B.map(r=>r.gauge),y:B.map(r=>r[m]),type:"bar",name:m,marker:{color:["#2e7d32","#e8834c","#c62828","#3f51b5"][k]}})),
+    lay({title:{text:st,font:{size:12}},barmode:"group",yaxis:{range:[0,1.05],gridcolor:css("--line")}}),cfg);
+  const r=B.find(x=>x.gauge===g);
+  Plotly.react("ind-cm",[{z:[[r.TP,r.FN],[r.FP,r.TN]],x:["allarme","no allarme"],y:["frana","no frana"],type:"heatmap",colorscale:[[0,"#f5f5f5"],[1,"#5c8f74"]],showscale:false,text:[[`TP ${r.TP}`,`FN ${r.FN}`],[`FP ${r.FP}`,`TN ${r.TN}`]],texttemplate:"%{text}",textfont:{size:16,color:"#111"}}],
+    lay({title:{text:`${g}: tabella di contingenza (CV)`,font:{size:12}},yaxis:{autorange:"reversed"},margin:{l:80,r:10,t:40,b:40}}),cfg);
+  const S=I.scores.filter(x=>x.strategy===st&&x.gauge===g),t=S.map(x=>x.t_start);
+  const tr=[{x:t,y:S.map(x=>x.score),type:"bar",marker:{color:S.map(x=>x.Y?css("--ls"):(x.alarm?"orange":"#9e9e9e"))},text:S.map(x=>`${x.event_id}${x.landslide?" — "+x.landslide:""}<br>I=${x.score.toFixed(1)}${x.tau!=null?" soglia="+x.tau.toFixed(1):""}<br>${x.alarm?"ALLARME":"no allarme"}`),hoverinfo:"text",name:"I evento"}];
+  if(S[0]&&S[0].tau!=null)tr.push({x:t,y:S.map(x=>x.tau),mode:"lines",line:{shape:"hv",dash:"dash",color:css("--ink")},name:"soglia CV"});
+  Plotly.react("ind-time",tr,lay({title:{text:"valore dell'indicatore per evento (rosso = frana, arancio = falso allarme)",font:{size:12}},yaxis:{range:[0,105],title:"I (0–100)",gridcolor:css("--line")}}),cfg);
+  const ch=I.chosen.filter(x=>x.strategy===st&&x.gauge===g);
+  const miss=S.filter(x=>x.Y&&!x.alarm).map(x=>x.landslide);
+  $("#ind-note").innerHTML=(miss.length?`Frane mancate: ${miss.join(", ")}. `:"Tutte le frane rilevate. ")+(ch.length?"Combinazioni scelte nei fold: "+ch.map(x=>`${x.combo} (${x.n_folds})`).join(" · "):"");
+}
 // ---------- init
 fetch("data.json").then(r=>r.json()).then(d=>{D=d;
   $("#tabs").innerHTML=TABS.map((t,i)=>`<button data-s="${t[0]}" class="${i?"":"on"}">${t[1]}</button>`).join("");
@@ -300,12 +337,12 @@ fetch("data.json").then(r=>r.json()).then(d=>{D=d;
   ["#ts-g","#ev-g","#ls-g"].forEach(s=>fill($(s),D.gauges,D.reference_gauge));
   const dsel=()=>fill($("#ev-d"),D.sites[$("#ev-s").value].map(String),"60");dsel();
   fill($("#ls-f"),Object.keys(D.features).map(f=>[f,D.features[f][0]]),"NV_VWC0_60");
-  $("#gal").innerHTML=["Fig02_timeseries_rain_VWC_suction","Fig02b_IETD_event_identification_example","Fig03_hydrological_index_extraction","Fig04_ED_space_event_classes","Fig05_infiltration_velocity_V_vs_NV","Fig06_landslide_timeline","Fig06b_rainfall_around_landslides","Fig07_boxplots_Salerno_GC","Fig07_boxplots_Albori","Fig07_boxplots_Cetara","Fig07_boxplots_Cetara_SC","Fig07_boxplots_Dragonea","Fig08_ROC_curves","Fig09_E_vs_VWC0_60_KDE","Fig10_antecedent_VWC_profiles","Fig11_discriminant_synthesis","Fig12_mahalanobis_and_accumulation_windows","Fig13_multivar_2var_heatmaps","Fig14_multivar_best_by_family","Fig15_multivar_scatter_examples"]
+  $("#gal").innerHTML=["Fig02_timeseries_rain_VWC_suction","Fig02b_IETD_event_identification_example","Fig03_hydrological_index_extraction","Fig04_ED_space_event_classes","Fig05_infiltration_velocity_V_vs_NV","Fig06_landslide_timeline","Fig06b_rainfall_around_landslides","Fig07_boxplots_Salerno_GC","Fig07_boxplots_Albori","Fig07_boxplots_Cetara","Fig07_boxplots_Cetara_SC","Fig07_boxplots_Dragonea","Fig08_ROC_curves","Fig09_E_vs_VWC0_60_KDE","Fig10_antecedent_VWC_profiles","Fig11_discriminant_synthesis","Fig12_mahalanobis_and_accumulation_windows","Fig13_multivar_2var_heatmaps","Fig14_multivar_best_by_family","Fig15_multivar_scatter_examples","Fig16_indicator_performance","Fig17_indicator_timeline_best"]
     .map(f=>`<a href="figures/${f}.png" target="_blank"><img loading="lazy" src="figures/${f}.png" alt="${f}">${f}</a>`).join("");
   const T=D.tables;
   table($("#t07"),T.T07_infiltration_V_vs_NV,[["pair","coppia"],["metric","metrica"],["n_V","n V",0],["n_NV","n NV",0],["median_V","mediana V"],["median_NV","mediana NV"],["RB_V_vs_NV","RB"],["MWU_p","p"]]);
   table($("#t08"),T.T08_V_vs_NV_paired_by_event,[["variable","var."],["depth_V","z V",0],["depth_NV","z NV",0],["n_events","n",0],["median_V","mediana V"],["median_NV","mediana NV"],["frac_events_V_lt_NV","frazione V&lt;NV"],["wilcoxon_p","p"]]);
-  kpis();ts();events();infil();lsec();heat();lstab();mvInit();
+  kpis();ts();events();infil();lsec();heat();lstab();mvInit();indInit();
   $("#ts-g").onchange=ts;$("#ts-d").onchange=ts;
   $("#ev-s").onchange=()=>{dsel();events()};$("#ev-g").onchange=events;$("#ev-d").onchange=events;
   $("#inf-m").onchange=infil;["#mv-sc","#mv-fam","#mv-wt","#mv-cmp"].forEach(x=>$(x).onchange=mv);$("#mv-q").oninput=mv;$("#pv").onchange=infil;$("#ls-g").onchange=lsec;$("#ls-f").onchange=lsec;

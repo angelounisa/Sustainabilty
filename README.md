@@ -11,6 +11,7 @@ data/processed/        serie pulite in UTC+1, eventi, indici (pickle/csv.gz)
 src/                   io_data.py (QC), events.py (IETD + indici), stats_ls.py (statistiche Cap. 4)
 run_analysis.py        pipeline -> outputs/tables/*.csv
 make_figures.py        figure -> outputs/figures/*.png
+run_indicator.py       indicatore frana/no frana con CV -> T19-T21, Fig16-17, docs/indicator.json
 make_dashboard.py      esporta dati e figure in docs/ (sito GitHub Pages)
 docs/                  dashboard (index.html + data.json + figures/)
 ```
@@ -79,6 +80,17 @@ Pioggia gen 2025 – set 2026: 1694 mm (Salerno G.C.) – 2247 mm (Dragonea); 20
   | pioggia + 2 acqua | I_max + NV VWC0 15 + NV VWC0 30 0.943 | E + NV VWC0 15 + V VWC0 60 0.944 | A7d + V ΔVWC 35 + V ΔVWC 60 0.974 |
 
   Lettura: aggiungere il contenuto d'acqua antecedente superficiale del sito NV (15–30 cm) a una variabile di pioggia aumenta poco la media ma soprattutto il caso peggiore (min AUC da 0.87 a 0.93–0.96), cioè rende la discriminazione più stabile tra pluviometri. Con D_M emerge V VWC0 60 cm, ma in parte perché L1 avviene con profilo profondo **secco** (anomalia "al contrario"): con il punteggio direzionale questa combinazione scende (PS 0.84–0.90). Le combinazioni a 3 variabili arrivano ad AUC 0.97–0.99, ma sono scelte tra ~960 candidati con 3–4 frane per pluviometro: il guadagno rispetto alle coppie è nell'ordine dell'incertezza e va confermato su nuovi eventi. Le combinazioni con V 15 cm sono escluse dal confronto (manca il dato per L3/L4).
+- **Indicatore frana / no frana per pluviometro (`run_indicator.py`, T19–T21, Fig16–17, tab *Indicatore*)**. I = media dei percentili delle variabili rispetto agli eventi senza frana (verso critico; suzione con segno invertito), allarme se I ≥ soglia di Youden; validazione leave-one-event-out (riferimento e soglia ricalcolati senza l'evento testato). Risultati aggregati sui 5 pluviometri (18 eventi con frana, 186 senza):
+  | indicatore | POD | POFD | FAR | TSS | AUC CV |
+  |---|---|---|---|---|---|
+  | E (solo pioggia) | 0.78 | 0.16 | 0.67 | 0.62 | 0.94 |
+  | E + A7d (solo pioggia) | 0.78 | 0.08 | 0.50 | 0.70 | 0.98 |
+  | **E + NV VWC0 15 cm** | **0.83** | **0.09** | 0.53 | **0.74** | 0.96 |
+  | D + P6h + NV VWC0 30 cm | 0.72 | 0.05 | 0.41 | 0.67 | 0.98 |
+  | D + A7d + V ΔVWC 60 (risposta durante l'evento) | 0.78 | 0.03 | 0.30 | 0.75 | 0.99 |
+  | selezione automatica nel fold, pioggia + VWC0 | 0.61 | 0.09 | 0.59 | 0.53 | 0.90 |
+
+  Aggiungere il VWC antecedente superficiale (NV 15 cm) alla cumulata dimezza i falsi allarmi (29 → 17) senza perdere frane. La selezione automatica della combinazione dentro ogni fold rende meno delle combinazioni fisse: con 3–4 frane per pluviometro scegliere tra molte combinazioni è instabile. Le combinazioni fisse sono state scelte dopo aver visto gli stessi dati, quindi la loro performance è ottimistica e va confermata su eventi futuri.
 - **Implicazione per la discussione / LEWS**: in questo dataset le variabili idrologiche non superano l'evento pluviometrico come singolo predittore, ma (i) la suzione superficiale antecedente e il VWC profondo descrivono lo stato di predisposizione invernale in cui cadono tutte le frane, (ii) la combinazione multivariata (Mahalanobis) separa bene le frane dagli eventi normali, e (iii) la vegetazione riduce in modo marcato l'ingresso d'acqua e la velocità di propagazione in profondità.
 
 Nota rispetto all'indice: il punto 5 dell'indice ipotizza che il VWC a 60 cm abbia il potere discriminante maggiore; con i dati 2025–2026 e queste 4 frane ciò vale per ΔVWC a 60 cm (sito V), non per il VWC antecedente a 60 cm.

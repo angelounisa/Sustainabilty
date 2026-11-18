@@ -73,3 +73,24 @@ multivariate:
   water_vars: [NV_VWC0_15, NV_VWC0_30, NV_VWC0_60, V_VWC0_15, V_VWC0_35, V_VWC0_60,
                NV_dVWC_15, NV_dVWC_30, NV_dVWC_60, V_dVWC_15, V_dVWC_35, V_dVWC_60]
   chi2_quantile: 0.95
+
+indicator:
+  # fixed combinations tested per gauge (suction s0 enters with reversed sign: low = critical)
+  fixed:
+    "E": [E_mm]
+    "P6h": [P6h_mm]
+    "E + A7d": [E_mm, A7d_mm]
+    "D + P6h": [D_h, P6h_mm]
+    "E + NV VWC0 15": [E_mm, NV_VWC0_15]
+    "P6h + NV VWC0 15": [P6h_mm, NV_VWC0_15]
+    "E + NV VWC0 60": [E_mm, NV_VWC0_60]
+    "E + V VWC0 60": [E_mm, V_VWC0_60]
+    "E + NV s0 15": [E_mm, NV_s0_15]
+    "D + P6h + NV VWC0 30": [D_h, P6h_mm, NV_VWC0_30]
+    "E + A7d + NV VWC0 15": [E_mm, A7d_mm, NV_VWC0_15]
+    "P6h + NV s0 15 + NV VWC0 60": [P6h_mm, NV_s0_15, NV_VWC0_60]
+    "E + V dVWC 60 (event)": [E_mm, V_dVWC_60]
+    "D + A7d + V dVWC 60 (event)": [D_h, A7d_mm, V_dVWC_60]
+  # nested selection inside each CV fold among these families
+  select_rain: [E_mm, D_h, Imax_mmh, P3h_mm, P6h_mm, P24h_mm, A7d_mm, A30d_mm]
+  select_water: [NV_VWC0_15, NV_VWC0_30, NV_VWC0_60, V_VWC0_35, V_VWC0_60]
