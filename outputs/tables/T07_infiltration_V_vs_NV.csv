@@ -1,4 +1,6 @@
 pair,metric,n_V,n_NV,median_V,median_NV,RB_V_vs_NV,MWU_p
+0-15 (surface -> 15 cm),v_peak_cmh,21,35,0.8654,4.865,-0.3483,0.03089
+0-15 (surface -> 15 cm),v_onset_cmh,25,38,2.308,3.316,-0.2158,0.1517
 upper (15-35 V / 15-30 NV),v_peak_cmh,11,23,3,4.186,-0.1383,0.5314
 upper (15-35 V / 15-30 NV),v_onset_cmh,12,25,3.253,2.812,0.1933,0.3551
 lower (35-60 V / 30-60 NV),v_peak_cmh,8,11,1.819,9.474,-0.7955,0.00254

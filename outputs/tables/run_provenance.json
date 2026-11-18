@@ -93,6 +93,33 @@
    "mahalanobis_quantile": 0.95,
    "landslide_match_extension_h": 24,
    "kde_bw": "scott"
+  },
+  "multivariate": {
+   "rain_vars": [
+    "E_mm",
+    "D_h",
+    "Imax_mmh",
+    "P3h_mm",
+    "P6h_mm",
+    "P24h_mm",
+    "A7d_mm",
+    "A30d_mm"
+   ],
+   "water_vars": [
+    "NV_VWC0_15",
+    "NV_VWC0_30",
+    "NV_VWC0_60",
+    "V_VWC0_15",
+    "V_VWC0_35",
+    "V_VWC0_60",
+    "NV_dVWC_15",
+    "NV_dVWC_30",
+    "NV_dVWC_60",
+    "V_dVWC_15",
+    "V_dVWC_35",
+    "V_dVWC_60"
+   ],
+   "chi2_quantile": 0.95
   }
  }
 }

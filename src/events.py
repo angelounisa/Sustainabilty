@@ -42,11 +42,13 @@ def rainfall_indices(ev: pd.DataFrame, rain: pd.Series, timestep_min: int, imax_
     roll_imax = rain.rolling(n_imax, min_periods=1).sum() * (60 / imax_window_min)  # mm/h
     rolls = {w: rain.rolling(int(w * 60 / timestep_min), min_periods=1).sum() for w in max_windows_h}
     cum = rain.cumsum()
-    D, Imax, Pw, A = [], [], {w: [] for w in max_windows_h}, {d: [] for d in antecedent_days}
+    D, Imax, tImax, Pw, A = [], [], [], {w: [] for w in max_windows_h}, {d: [] for d in antecedent_days}
     for r in ev.itertuples():
         sel = slice(r.t_start + pd.Timedelta(minutes=timestep_min), r.t_end)
         D.append((r.t_end - r.t_start) / pd.Timedelta(hours=1))
         Imax.append(roll_imax[sel].max())
+        # centre of the 60-min window of maximum intensity (index = window end)
+        tImax.append(roll_imax[sel].idxmax() - pd.Timedelta(minutes=imax_window_min / 2))
         for w in max_windows_h:
             Pw[w].append(rolls[w][sel].max())
         c0 = cum.asof(r.t_start)
@@ -58,6 +60,7 @@ def rainfall_indices(ev: pd.DataFrame, rain: pd.Series, timestep_min: int, imax_
                 A[d].append(c0 - cum.asof(tA))
     ev["D_h"] = D
     ev["Imax_mmh"] = Imax
+    ev["t_Imax"] = tImax
     ev["Imean_mmh"] = ev.E_mm / ev.D_h
     for w in max_windows_h:
         ev[f"P{w}h_mm"] = Pw[w]

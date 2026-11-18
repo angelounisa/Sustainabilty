@@ -130,6 +130,25 @@ for site, s in sc["sites"].items():
                                  v_peak_cmh=(b - a) / dt_pk if dt_pk > 0 else np.nan,
                                  v_onset_cmh=(b - a) / dt_on if dt_on > 0 else np.nan,
                                  landslide=r.landslide))
+    # 0-15 cm: from the ground surface (rainfall) to the first sensor. Delta z = 15 cm.
+    # peak lag  : t(VWC peak at 15 cm) - t(centre of the 60-min window of maximum rainfall intensity)
+    # onset lag : t(wetting-front arrival at 15 cm) - t_start (beginning of rainfall)
+    d1 = dd[0]
+    for i, r in EV.iterrows():
+        c1 = r[f"{site}_class_{d1}"]
+        if c1 in (None, "irrelevant"):
+            continue
+        dt_pk = (r[f"{site}_tpk_{d1}"] - r.t_Imax) / pd.Timedelta(hours=1)
+        tend = r.t_end + pd.Timedelta(hours=hc["response_extension_h"])
+        tb = events.onset_time(soil[site], f"VWC_{d1}", r.t_start, tend, r[f"{site}_VWC0_{d1}"],
+                               r[f"{site}_dVWC_{d1}"], ic["onset_fraction"])
+        dt_on = (tb - r.t_start) / pd.Timedelta(hours=1)
+        vel_rows.append(dict(gauge=r.gauge, event_id=r.event_id, t_start=r.t_start, E_mm=r.E_mm,
+                             Imax_mmh=r.Imax_mmh, site=site, pair=f"0-{d1}", dz_cm=d1,
+                             class_upper="surface", class_lower=c1, dt_peak_h=dt_pk, dt_onset_h=dt_on,
+                             v_peak_cmh=d1 / dt_pk if dt_pk > 0 else np.nan,
+                             v_onset_cmh=d1 / dt_on if dt_on > 0 else np.nan,
+                             landslide=r.landslide))
 VEL = pd.DataFrame(vel_rows)
 EV.to_pickle(P["processed"] / "events.pkl")
 VEL.to_pickle(P["processed"] / "velocity.pkl")
@@ -179,7 +198,7 @@ vs = V.groupby(["site", "pair"]).agg(n=("dt_peak_h", "count"),
 save(vs, "T06_infiltration_velocity_summary", index=True)
 
 rows = []
-for lab, pv, pn in [("upper (15-35 V / 15-30 NV)", "15-35", "15-30"),
+for lab, pv, pn in [("0-15 (surface -> 15 cm)", "0-15", "0-15"), ("upper (15-35 V / 15-30 NV)", "15-35", "15-30"),
                     ("lower (35-60 V / 30-60 NV)", "35-60", "30-60"), ("15-60", "15-60", "15-60")]:
     for metric in ["v_peak_cmh", "v_onset_cmh"]:
         a = V[(V.site == "V") & (V.pair == pv)][metric].dropna()
@@ -263,6 +282,30 @@ save(pd.DataFrame(mrows), "T14_mahalanobis_summary")
 win = ["P1h_mm", "P3h_mm", "P6h_mm", "P12h_mm", "P24h_mm", "E_mm", "A3d_mm", "A7d_mm", "A14d_mm", "A30d_mm"]
 save(DT[DT.feature.isin(win)].pivot(index="feature", columns="gauge", values="AUC_star").loc[win],
      "T15_auc_by_accumulation_window", index=True)
+
+# ------------------------------------------------ Ch.4.4 multivariate combinations
+from src import multivar
+mc = CFG["multivariate"]
+MV = multivar.run(EV, list(rain), mc["rain_vars"], mc["water_vars"], "Y", mc["chi2_quantile"])
+n_exp = EV.groupby("gauge").Y.sum().to_dict()
+for name, t in MV.items():
+    save(t, f"T16_multivar_{name}_by_gauge")
+    save(multivar.summarise(t, n_exp), f"T17_multivar_{name}_summary")
+pd.to_pickle(MV, P["processed"] / "multivar.pkl")
+# best combinations per category, only combinations with data for ALL landslide events
+# 'antecedent' = only pre-event soil state (VWC0) -> usable before/at event onset;
+# 'event' = includes dVWC (soil response during the event)
+best = []
+for name, t in MV.items():
+    sm = multivar.summarise(t, n_exp)
+    sm = sm[sm.complete_all_gauges]
+    sm["water_type"] = sm.combo.apply(lambda c: "event (dVWC)" if "dVWC" in c else
+                                      ("antecedent (VWC0)" if "VWC0" in c else "rain only"))
+    for wt, g_ in sm.groupby("water_type"):
+        best.append(g_.nlargest(3, "AUC_DM_mean").assign(category=name))
+BEST = pd.concat(best)[["category", "water_type", "combo", "AUC_DM_mean", "AUC_DM_min", "AUC_PS_mean",
+                        "AUC_PS_min", "LS_above_thr", "n_ls", "recall_thr", "FP_above_thr", "n_nols", "FPR_thr"]]
+save(BEST, "T18_multivar_best_combinations")
 
 json.dump(dict(python=platform.python_version(), pandas=pd.__version__, numpy=np.__version__,
                scipy=scipy.__version__, config=CFG),

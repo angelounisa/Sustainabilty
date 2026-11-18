@@ -186,8 +186,8 @@ def fig_ED_classes():
 # ---------------------------------------------------------------- Fig.5 infiltration
 def fig_infiltration():
     V = VEL[VEL.gauge == REF]
-    fig, ax = plt.subplots(1, 3, figsize=(14, 4.6))
-    groups = [("V", "15-35"), ("NV", "15-30"), ("V", "35-60"), ("NV", "30-60"), ("V", "15-60"), ("NV", "15-60")]
+    fig, ax = plt.subplots(1, 3, figsize=(16, 4.6), gridspec_kw=dict(width_ratios=[1.3, 1.3, 1]))
+    groups = [("V", "0-15"), ("NV", "0-15"), ("V", "15-35"), ("NV", "15-30"), ("V", "35-60"), ("NV", "30-60"), ("V", "15-60"), ("NV", "15-60")]
     for k, metric in enumerate(["v_peak_cmh", "v_onset_cmh"]):
         data = [V[(V.site == s) & (V.pair == p)][metric].dropna() for s, p in groups]
         bp = ax[k].boxplot(data, patch_artist=True, widths=.6, showfliers=False)
@@ -198,7 +198,7 @@ def fig_infiltration():
             cls = V[(V.site == s) & (V.pair == p)].dropna(subset=[metric]).class_lower
             ax[k].scatter(i + 1 + rng.uniform(-.15, .15, len(dd)), dd, s=14,
                           c=[C[c] for c in cls], edgecolor="k", lw=.4, zorder=3)
-        ax[k].set_xticks(range(1, 7), [f"{s}\n{p} cm" for s, p in groups])
+        ax[k].set_xticks(range(1, len(groups) + 1), [f"{s}\n{p} cm" for s, p in groups])
         ax[k].set_yscale("log")
         ax[k].set_ylabel("v (cm/h)")
         ax[k].set_title("peak-lag velocity Δz/Δt_peak" if k == 0 else "wetting-front (onset) velocity")
@@ -429,6 +429,110 @@ def fig_mahalanobis_windows():
     savefig(fig, "Fig12_mahalanobis_and_accumulation_windows")
 
 
+# ---------------------------------------------------------------- multivariate (Ch.4.4)
+MV = pd.read_pickle(P["processed"] / "multivar.pkl")
+from src import multivar as _mv
+NEXP = EV.groupby("gauge").Y.sum().to_dict()
+MC = CFG["multivariate"]
+
+
+def _lab(c):
+    return " + ".join(FEAT[x][0] for x in c.split(" + "))
+
+
+def fig_multivar_heatmaps():
+    sm = _mv.summarise(MV["2var_R+W"], NEXP).set_index("combo")
+    R, W = MC["rain_vars"], MC["water_vars"]
+    fig, axs = plt.subplots(1, 2, figsize=(15, 5.6))
+    for a, col, ttl in [(axs[0], "AUC_DM_mean", "Mahalanobis D_M (non-directional)"),
+                        (axs[1], "AUC_PS_mean", "directional percentile score")]:
+        M = np.array([[sm.loc[f"{r} + {w}", col] for w in W] for r in R])
+        im = a.imshow(M, cmap="RdYlGn", vmin=.5, vmax=1, aspect="auto")
+        for i in range(len(R)):
+            for j in range(len(W)):
+                ok = sm.loc[f"{R[i]} + {W[j]}", "complete_all_gauges"]
+                a.text(j, i, f"{M[i, j]:.2f}" + ("" if ok else "†"), ha="center", va="center", fontsize=7)
+        a.set_xticks(range(len(W)), [FEAT[w][0] for w in W], rotation=55, ha="right")
+        a.set_yticks(range(len(R)), [FEAT[r][0] for r in R])
+        a.grid(False)
+        a.set_title(f"mean AUC over 5 gauges — {ttl}")
+        a.axvline(5.5, color="k", lw=1)
+        plt.colorbar(im, ax=a, shrink=.8)
+    fig.suptitle("Two-variable combinations: 1 rainfall variable × 1 soil-water variable "
+                 "(left block of each map: antecedent VWC0; right block: event ΔVWC; † = landslide events missing)")
+    fig.tight_layout()
+    savefig(fig, "Fig13_multivar_2var_heatmaps")
+
+
+def fig_multivar_best():
+    rows = []
+    for name, ttl in [("1var", "1 variable"), ("2var_R+W", "rain + water"),
+                      ("3var_R+R+W", "2 rain + water"), ("3var_R+W+W", "rain + 2 water")]:
+        sm = _mv.summarise(MV[name], NEXP)
+        sm = sm[sm.complete_all_gauges]
+        if name == "1var":
+            fam = [("rain", ~sm.combo.str.contains("VWC")), ("VWC0", sm.combo.str.contains("VWC0")),
+                   ("ΔVWC", sm.combo.str.contains("dVWC"))]
+        else:
+            fam = [("antecedent VWC0", ~sm.combo.str.contains("dVWC")), ("with ΔVWC", sm.combo.str.contains("dVWC"))]
+        for wt, cond in fam:
+            sub = sm[cond]
+            if not len(sub):
+                continue
+            for sc in ["AUC_PS_mean", "AUC_DM_mean"]:
+                b = sub.nlargest(1, sc).iloc[0]
+                rows.append(dict(group=f"{ttl} | {wt}", score=sc, combo=_lab(b.combo), mean=b[sc],
+                                 min=b[sc.replace("mean", "min")]))
+    T = pd.DataFrame(rows)
+    fig, axs = plt.subplots(1, 2, figsize=(16, 5.5), sharey=False)
+    for a, sc, ttl in [(axs[0], "AUC_PS_mean", "directional percentile score"),
+                       (axs[1], "AUC_DM_mean", "Mahalanobis D_M")]:
+        t = T[T.score == sc].reset_index(drop=True)
+        y = np.arange(len(t))[::-1]
+        a.hlines(y, t["min"], t["mean"], color="#999")
+        a.plot(t["min"], y, "|", color="#555", ms=10, label="worst gauge")
+        a.plot(t["mean"], y, "o", color="#2e6b4f", label="mean of 5 gauges")
+        a.set_yticks(y, [f"{g}\n{c}" for g, c in zip(t.group, t.combo)], fontsize=7)
+        a.set_xlim(.5, 1.01)
+        a.set_xlabel("AUC")
+        a.set_title(f"best combination per family — {ttl}")
+        a.legend(fontsize=7, loc="lower left")
+    fig.tight_layout()
+    savefig(fig, "Fig14_multivar_best_by_family")
+
+
+def fig_multivar_scatter():
+    from matplotlib.patches import Ellipse
+    pairs = [("E_mm", "NV_VWC0_15"), ("E_mm", "V_VWC0_60")]
+    fig, axs = plt.subplots(len(pairs), len(GAUGES), figsize=(18, 7.5))
+    thr = np.sqrt(stats.chi2.ppf(MC["chi2_quantile"], 2))
+    for i, (xr, xw) in enumerate(pairs):
+        for a, g in zip(axs[i], GAUGES):
+            D = EV[EV.gauge == g].dropna(subset=[xr, xw])
+            n, l = D[D.Y == 0], D[D.Y == 1]
+            X0 = n[[xw, xr]].to_numpy(float)
+            mu, S = X0.mean(0), np.cov(X0, rowvar=False)
+            ev_, evec = np.linalg.eigh(S)
+            ang = np.degrees(np.arctan2(evec[1, 1], evec[0, 1]))
+            a.add_patch(Ellipse(mu, 2 * thr * np.sqrt(ev_[1]), 2 * thr * np.sqrt(ev_[0]), angle=ang,
+                                fill=False, ls="--", color="orange", label="D_M = χ²₂ 95%"))
+            a.scatter(n[xw], n[xr], s=12, color="#666", label="no landslide")
+            a.scatter(l[xw], l[xr], marker="*", s=200, color=C["ls"], edgecolor="k", label="landslide")
+            for r in l.itertuples():
+                a.annotate(r.landslide, (getattr(r, xw), getattr(r, xr)), xytext=(4, 4),
+                           textcoords="offset points", fontsize=7)
+            row = MV["2var_R+W"].query("gauge == @g and combo == @xr + ' + ' + @xw").iloc[0]
+            a.set_title(f"{g}\nAUC D_M={row.AUC_DM:.2f} | AUC PS={row.AUC_PS:.2f}", fontsize=8)
+            a.set_xlabel(FEAT[xw][0])
+            a.set_ylim(bottom=0)
+        axs[i, 0].set_ylabel(FEAT[xr][0])
+    axs[0, 0].legend(fontsize=6, loc="upper left")
+    fig.suptitle("Examples of 2-variable spaces: E vs antecedent VWC (NV 15 cm, V 60 cm) with the Mahalanobis "
+                 "95% ellipse of non-triggering events")
+    fig.tight_layout()
+    savefig(fig, "Fig15_multivar_scatter_examples")
+
+
 if __name__ == "__main__":
     fig_timeseries()
     fig_ietd_example()
@@ -444,3 +548,6 @@ if __name__ == "__main__":
     fig_profiles()
     fig_synthesis()
     fig_mahalanobis_windows()
+    fig_multivar_heatmaps()
+    fig_multivar_best()
+    fig_multivar_scatter()

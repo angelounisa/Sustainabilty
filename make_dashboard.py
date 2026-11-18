@@ -57,12 +57,20 @@ tabs = {n: pd.read_csv(P["tables"] / f"{n}.csv") for n in
         ["T04_event_summary_by_gauge", "T06_infiltration_velocity_summary", "T07_infiltration_V_vs_NV",
          "T08_V_vs_NV_paired_by_event", "T14_mahalanobis_summary", "T05_event_classes_reference_gauge"]}
 
+MV = pd.read_pickle(P["processed"] / "multivar.pkl")
+from src import multivar as _mv
+NEXP = EV.groupby("gauge").Y.sum().to_dict()
+
 out = dict(
     gauges=list(CFG["rain_gauges"].values()), reference_gauge=CFG["hydro"]["reference_gauge"],
     sites={k: v["depths_cm"] for k, v in CFG["soil"]["sites"].items()},
     features=json.load(open(P["processed"] / "features.json")),
     timeseries=ts, events=records(EVo), velocity=records(VEL), discriminant=records(DT.drop(columns=["U"])),
     mahalanobis=records(MD), landslides=records(LS), tables={k: records(v) for k, v in tabs.items()},
+    multivar=dict(rain_vars=CFG["multivariate"]["rain_vars"], water_vars=CFG["multivariate"]["water_vars"],
+                  summary={k: records(_mv.summarise(v, NEXP)) for k, v in MV.items()},
+                  by_gauge={k: records(v[["gauge", "combo", "n_ls", "n_nols", "AUC_DM", "AUC_PS", "LS_above_thr",
+                                          "FP_above_thr", "recall_at_FPR10"]]) for k, v in MV.items()}),
     params=dict(ietd_h=CFG["events"]["ietd_h"], min_E=CFG["events"]["min_cumulative_mm"],
                 ext_h=CFG["hydro"]["response_extension_h"]),
 )
