@@ -13,6 +13,7 @@ run_analysis.py        pipeline -> outputs/tables/*.csv
 make_figures.py        figure -> outputs/figures/*.png
 run_indicator.py       indicatore frana/no frana con CV -> T19-T21, Fig16-17, docs/indicator.json
 make_dashboard.py      esporta dati e figure in docs/ (sito GitHub Pages)
+paper/                 manoscritto (docx + pdf), figure per il paper (600 dpi), build_paper.js
 docs/                  dashboard (index.html + data.json + figures/)
 ```
 Riproduzione: `pip install -r requirements.txt && python run_analysis.py && python make_figures.py && python make_dashboard.py`.
